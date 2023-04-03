@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Predicting Stock Index Realised Volatility using Bayesian VARs",
     "section": "",
-    "text": "Abstract. This is a suggested formatting for your abstract. This quarto document is a template for your report. It includes some basic ways of working with such documents. You are invited to learn more about developing online reports with this technology.\nKeywords. bsvars, impulse responses, quarto, R, tax shocks"
+    "text": "Abstract: This research report explores whether VARs and Bayesian VARs are able to predict realised volatility in equity index markets.\nKeywords. BVARs, Realised Volatility, Stock Indices, SP500"
   },
   {
     "objectID": "index.html#references",
