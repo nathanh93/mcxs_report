@@ -17,15 +17,15 @@ knitr:
 bibliography: references.bib
 ---
 
-> **Abstract.** This is a suggested formatting for your abstract. This **quarto** document is a template for your report. It includes some basic ways of working with such documents. You are invited to learn more about developing online reports with this technology.
+> **Abstract:** This research report explores whether VARs and 
+>Bayesian VARs are able to predict realised volatility in equity index markets.
 >
-> **Keywords.** bsvars, impulse responses, quarto, R, tax shocks
+> **Keywords.** BVARs, Realised Volatility, Stock Indices, SP500
 
-# VAR equation
+# Realised Variance Equation
 
 ```{=tex}
 \begin{align}
-Y &= XA + U \\
 RV_t &= \sum r^2_{t,i}
 \end{align}
 ```
