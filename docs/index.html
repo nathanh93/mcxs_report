@@ -88,8 +88,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#realised-variance-equation" id="toc-realised-variance-equation" class="nav-link active" data-scroll-target="#realised-variance-equation">Realised Variance Equation</a>
+  <li><a href="#research-proposal" id="toc-research-proposal" class="nav-link active" data-scroll-target="#research-proposal">Research Proposal</a>
   <ul class="collapse">
+  <li><a href="#objective-and-motivation" id="toc-objective-and-motivation" class="nav-link" data-scroll-target="#objective-and-motivation">Objective and Motivation</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></li>
   </ul>
@@ -128,11 +130,29 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>Abstract:</strong> This research report explores whether VARs and Bayesian VARs are able to predict realised volatility in equity index markets.</p>
 <p><strong>Keywords.</strong> BVARs, Realised Volatility, Stock Indices, SP500</p>
 </blockquote>
-<section id="realised-variance-equation" class="level1">
-<h1>Realised Variance Equation</h1>
+<section id="research-proposal" class="level1">
+<h1>Research Proposal</h1>
+<section id="objective-and-motivation" class="level2">
+<h2 class="anchored" data-anchor-id="objective-and-motivation">Objective and Motivation</h2>
+<p>This paper seeks to examine the effectiveness of Bayesian VARs as a method for forecasting realised volatility (<strong>RV</strong>) in equity markets. It will explore whether Bayesian estimation techniques lead to greater predictive accuracy compared to the standard VAR setup. The accurate prediction of market volatility has many applications in Finance, including the pricing of derivatives and the estimation of risk measures such as Value at Risk.</p>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>The models will be applied to daily data on realised variances occurring on a group of global stock indices. Stock indices serve as gauges of overall equity market performance and are generally categorised by country. For this analysis we will focus on 10 major global indices, the SPX, DJI, FTSE, GDAXI, FCHI, STOXX50E, N225, AORD, HSI and the STI.</p>
+<p>Realised variance is a measure of historical volatility occuring in financial time series constructed from intraday high frequency return data.</p>
+<p>Realised variance is defined as the sum of squared returns over specific period:</p>
 <span class="math display">\[\begin{align}
-RV_t &amp;= \sum r^2_{t,i}
+Realised\,Variance = \sum r^2_t
 \end{align}\]</span>
+<p>Where <span class="math inline">\(r_t\)</span> is defined as the log return over a predetermined interval, for example 5 minutes:</p>
+<span class="math display">\[\begin{align}
+r_t = log(p_t / p_{t-1})
+\end{align}\]</span>
+<p>Realised volatility <strong>RV</strong> is then computed as the square root of the realised variance.</p>
+<span class="math display">\[\begin{align}
+RV = \sqrt \sum r^2_t
+\end{align}\]</span>
+</section>
 <section id="references" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
 

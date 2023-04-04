@@ -7,6 +7,20 @@
     "text": "Abstract: This research report explores whether VARs and Bayesian VARs are able to predict realised volatility in equity index markets.\nKeywords. BVARs, Realised Volatility, Stock Indices, SP500"
   },
   {
+    "objectID": "index.html#objective-and-motivation",
+    "href": "index.html#objective-and-motivation",
+    "title": "Predicting Stock Index Realised Volatility using Bayesian VARs",
+    "section": "Objective and Motivation",
+    "text": "Objective and Motivation\nThis paper seeks to examine the effectiveness of Bayesian VARs as a method for forecasting realised volatility (RV) in equity markets. It will explore whether Bayesian estimation techniques lead to greater predictive accuracy compared to the standard VAR setup. The accurate prediction of market volatility has many applications in Finance, including the pricing of derivatives and the estimation of risk measures such as Value at Risk."
+  },
+  {
+    "objectID": "index.html#data",
+    "href": "index.html#data",
+    "title": "Predicting Stock Index Realised Volatility using Bayesian VARs",
+    "section": "Data",
+    "text": "Data\nThe models will be applied to daily data on realised variances occurring on a group of global stock indices. Stock indices serve as gauges of overall equity market performance and are generally categorised by country. For this analysis we will focus on 10 major global indices, the SPX, DJI, FTSE, GDAXI, FCHI, STOXX50E, N225, AORD, HSI and the STI.\nRealised variance is a measure of historical volatility occuring in financial time series constructed from intraday high frequency return data.\nRealised variance is defined as the sum of squared returns over specific period:\n\\[\\begin{align}\nRealised\\,Variance = \\sum r^2_t\n\\end{align}\\]\nWhere \\(r_t\\) is defined as the log return over a predetermined interval, for example 5 minutes:\n\\[\\begin{align}\nr_t = log(p_t / p_{t-1})\n\\end{align}\\]\nRealised volatility RV is then computed as the square root of the realised variance.\n\\[\\begin{align}\nRV = \\sqrt \\sum r^2_t\n\\end{align}\\]"
+  },
+  {
     "objectID": "index.html#references",
     "href": "index.html#references",
     "title": "Predicting Stock Index Realised Volatility using Bayesian VARs",
