@@ -92,6 +92,7 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#objective-and-motivation" id="toc-objective-and-motivation" class="nav-link" data-scroll-target="#objective-and-motivation">Objective and Motivation</a></li>
   <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#the-model" id="toc-the-model" class="nav-link" data-scroll-target="#the-model">The Model</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></li>
   </ul>
@@ -134,7 +135,7 @@ ul.task-list li input[type="checkbox"] {
 <h1>Research Proposal</h1>
 <section id="objective-and-motivation" class="level2">
 <h2 class="anchored" data-anchor-id="objective-and-motivation">Objective and Motivation</h2>
-<p>This paper seeks to examine the effectiveness of Bayesian VARs as a method for forecasting realised volatility (<strong>RV</strong>) in equity markets. It will explore whether Bayesian estimation techniques lead to greater predictive accuracy compared to the standard VAR setup. The accurate prediction of market volatility has many applications in Finance, including the pricing of derivatives and the estimation of risk measures such as Value at Risk.</p>
+<p>This paper seeks to examine the effectiveness of Bayesian VARs as a method for forecasting realised volatility (<strong>RV</strong>) in equity markets. It will explore whether various Bayesian estimation techniques applied to vector autoregression can accurately predict RV. The accurate prediction of market volatility has many applications in Finance, including the pricing of derivatives and the estimation of risk measures such as Value at Risk.</p>
 </section>
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data">Data</h2>
@@ -152,6 +153,23 @@ r_t = log(p_t / p_{t-1})
 <span class="math display">\[\begin{align}
 RV = \sqrt \sum r^2_t
 \end{align}\]</span>
+<p>The RV data is sourced from the <a href="https://oxford-man.ox.ac.uk/">Oxford Man Realised Library</a> which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/loading in data-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>From a visual inspection of the examples above, we can see that realised volatility appears highly non-stationary. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.</p>
+<p>Furthermore, spikes in RV appear to happen around the same times across markets. This provides our main motivation for modelling RV via a VAR specification whereby we can seek to capture the dynamic interrelationships between global equity markets.</p>
+<p>For ease of modelling and in order to bring the data closer to normality we will work with the log transformed variable <span class="math inline">\(log(RV_t)\)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="the-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-model">The Model</h2>
 </section>
 <section id="references" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
