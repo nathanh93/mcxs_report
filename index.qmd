@@ -77,15 +77,15 @@ From a visual inspection of the examples above, we can see that realised volatil
 
 Furthermore, spikes in RV appear to happen around the same times across markets. This provides our main motivation for modelling RV via a VAR specification whereby we can seek to capture the dynamic interrelationships between global equity markets.
 
-For ease of modelling and in order to bring the data closer to normality we will work with the log transformed variable $log(RV_t)$.
+For ease of modelling and in order to bring the data closer to normality we will work with the log transformed variable $log(rv_t)$.
 
 ```{r}
 
 par(mfrow=c(2,2), mar=c(3,3,2,2))
-plot(x=as.Date(data[data$Symbol=='.SPX','X']), y=log(data[data$Symbol=='.SPX','rv5']), type='l', xlab='Date', ylab='RV', main='S&P Daily RV', col='blue')
-plot(x=as.Date(data[data$Symbol=='.FTSE','X']), y=log(data[data$Symbol=='.FTSE','rv5']), type='l', xlab='Date', ylab='RV', main='FTSE Daily RV', col='blue')
-plot(x=as.Date(data[data$Symbol=='.GDAXI','X']), y=log(data[data$Symbol=='.GDAXI','rv5']), type='l', xlab='Date', ylab='RV', main='DAX Daily RV', col='blue')
-plot(x=as.Date(data[data$Symbol=='.N225','X']), y=log(data[data$Symbol=='.N225','rv5']), type='l', xlab='Date', ylab='RV', main='Nikkei Daily RV', col='blue')
+plot(x=as.Date(data[data$Symbol=='.SPX','X']), y=log(data[data$Symbol=='.SPX','rv5']), type='l', xlab='Date', ylab='RV', main='S&P log RV', col='blue')
+plot(x=as.Date(data[data$Symbol=='.FTSE','X']), y=log(data[data$Symbol=='.FTSE','rv5']), type='l', xlab='Date', ylab='RV', main='FTSE log RV', col='blue')
+plot(x=as.Date(data[data$Symbol=='.GDAXI','X']), y=log(data[data$Symbol=='.GDAXI','rv5']), type='l', xlab='Date', ylab='RV', main='DAX log RV', col='blue')
+plot(x=as.Date(data[data$Symbol=='.N225','X']), y=log(data[data$Symbol=='.N225','rv5']), type='l', xlab='Date', ylab='RV', main='Nikkei log RV', col='blue')
 
 
 ```
@@ -104,9 +104,9 @@ rv_t &= \mu_0 + A_1 rv_{t-1} + \dots + A_p rv_{t-p} + \epsilon_t\\
 
 Where $rv_t$ is a vector of log transformed realised variances for our $N=10$ stock indices on day $t$. The $A_i$ matrices are $N\times N$ matrices of the autoregressive slope parameters.
 
-The error term vector $\epsilon_t$ given the data up to $t-1$ is assumed to be multivariate normally distributed of dimension $N=10$, with mean $0_N$ and covariance matrix $\Sigma$.
+The error term vector $\epsilon_t$ given the data up to $t-1$ is assumed to be iid multivariate normally distributed of dimension $N=10$, with mean $0_N$ and covariance matrix $\Sigma$.
 
-Bayesian estimation techniques will be then utilised in conjunction with suitably chosen priors in order to compute 1 day ahead RV forecasts across all indices. The accuracy of the forecasts will then be assessed according to their root mean squared errors **RMSE** given by:
+Bayesian estimation techniques will be then utilised in conjunction with a number of suitably chosen prior specifications in order to estimate competing models and compute 1 day ahead RV forecasts across all indices. The predictions will be made out of sample and the accuracy of the forecasts will then be assessed according to their root mean squared errors **RMSE**, given by:
 
 ```{=tex}
 \begin{align}
@@ -114,11 +114,7 @@ RMSE = \sqrt{\sum(\hat{rv_i} - rv_i )^2/n}
 \end{align}
 ```
 
-Comparison of prediction accuracy via the RMSEs will facilitate comparison of various different model specifications, such as the incorporation of different prior distributions and differing assumptions about the parameters of those distributions.
+Assessment of prediction accuracy via the RMSEs will facilitate comparison of various different model specifications, such as the incorporation of different prior distributions and differing assumptions about the parameters of those distributions.
 
+The significance of being able to reliably forecast market volatility is primarily seen in the context of financial asset pricing. Volatility of the underlying asset is one of the crucial inputs required in options pricing. With reliable forecasts of stock index volatility one can assess the degree to which options quoted in the market are under or over estimating volatility relative to what is indicated by the historical realised dynamics.
 
-
-
-
-
-## References {.unnumbered}
