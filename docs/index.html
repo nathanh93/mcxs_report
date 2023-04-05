@@ -151,7 +151,7 @@ r_t = log(p_t / p_{t-1})
 \end{align}\]</span>
 <p>Realised volatility <strong>RV</strong> is then computed as the square root of the realised variance.</p>
 <span class="math display">\[\begin{align}
-RV = \sqrt \sum r^2_t
+RV = \sqrt{\sum r^2_t}
 \end{align}\]</span>
 <p>The RV data is sourced from the <a href="https://oxford-man.ox.ac.uk/">Oxford Man Realised Library</a> which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices.</p>
 <div class="cell">
@@ -170,6 +170,18 @@ RV = \sqrt \sum r^2_t
 </section>
 <section id="the-model" class="level2">
 <h2 class="anchored" data-anchor-id="the-model">The Model</h2>
+<p>The model will follow the standard <span class="math inline">\(VAR(p)\)</span> setup as follows:</p>
+<span class="math display">\[\begin{align}
+rv_t &amp;= \mu_0 + A_1 rv_{t-1} + \dots + A_p rv_{t-p} + \epsilon_t\\
+\epsilon_t | RV_{t-1} &amp;\sim iidN_N(0_N, \Sigma)
+\end{align}\]</span>
+<p>Where <span class="math inline">\(rv_t\)</span> is a vector of log transformed realised variances for our <span class="math inline">\(N=10\)</span> stock indices on day <span class="math inline">\(t\)</span>. The <span class="math inline">\(A_i\)</span> matrices are <span class="math inline">\(N\times N\)</span> matrices of the autoregressive slope parameters.</p>
+<p>The error term vector <span class="math inline">\(\epsilon_t\)</span> given the data up to <span class="math inline">\(t-1\)</span> is assumed to be multivariate normally distributed of dimension <span class="math inline">\(N=10\)</span>, with mean <span class="math inline">\(0_N\)</span> and covariance matrix <span class="math inline">\(\Sigma\)</span>.</p>
+<p>Bayesian estimation techniques will be then utilised in conjunction with suitably chosen priors in order to compute 1 day ahead RV forecasts across all indices. The accuracy of the forecasts will then be assessed according to their root mean squared errors <strong>RMSE</strong> given by:</p>
+<span class="math display">\[\begin{align}
+RMSE = \sqrt{\sum(\hat{rv_i} - rv_i )^2/n}
+\end{align}\]</span>
+<p>Comparison of prediction accuracy via the RMSEs will facilitate comparison of various different model specifications, such as the incorporation of different prior distributions and differing assumptions about the parameters of those distributions.</p>
 </section>
 <section id="references" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
