@@ -48,7 +48,7 @@ r_t = log(p_t / p_{t-1})
 Realised volatility **RV** is then computed as the square root of the realised variance.
 ```{=tex}
 \begin{align}
-RV = \sqrt \sum r^2_t
+RV = \sqrt{\sum r^2_t}
 \end{align}
 ```
 
@@ -92,6 +92,32 @@ plot(x=as.Date(data[data$Symbol=='.N225','X']), y=log(data[data$Symbol=='.N225',
 
 
 ## The Model
+
+The model will follow the standard $VAR(p)$ setup as follows:
+
+```{=tex}
+\begin{align}
+rv_t &= \mu_0 + A_1 rv_{t-1} + \dots + A_p rv_{t-p} + \epsilon_t\\
+\epsilon_t | RV_{t-1} &\sim iidN_N(0_N, \Sigma)
+\end{align}
+```
+
+Where $rv_t$ is a vector of log transformed realised variances for our $N=10$ stock indices on day $t$. The $A_i$ matrices are $N\times N$ matrices of the autoregressive slope parameters.
+
+The error term vector $\epsilon_t$ given the data up to $t-1$ is assumed to be multivariate normally distributed of dimension $N=10$, with mean $0_N$ and covariance matrix $\Sigma$.
+
+Bayesian estimation techniques will be then utilised in conjunction with suitably chosen priors in order to compute 1 day ahead RV forecasts across all indices. The accuracy of the forecasts will then be assessed according to their root mean squared errors **RMSE** given by:
+
+```{=tex}
+\begin{align}
+RMSE = \sqrt{\sum(\hat{rv_i} - rv_i )^2/n}
+\end{align}
+```
+
+Comparison of prediction accuracy via the RMSEs will facilitate comparison of various different model specifications, such as the incorporation of different prior distributions and differing assumptions about the parameters of those distributions.
+
+
+
 
 
 
