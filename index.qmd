@@ -25,7 +25,7 @@ bibliography: references.bib
 
 ## Objective and Motivation
 
-This paper seeks to examine the effectiveness of Bayesian VARs as a method for forecasting realised volatility (**RV**) in equity markets. It will explore whether Bayesian estimation techniques lead to greater predictive accuracy compared to the standard VAR setup. The accurate prediction of market volatility has many applications in Finance, including the pricing of derivatives and the estimation of risk measures such as Value at Risk.
+This paper seeks to examine the effectiveness of Bayesian VARs as a method for forecasting realised volatility (**RV**) in equity markets. It will explore whether various Bayesian estimation techniques applied to vector autoregression can accurately predict RV. The accurate prediction of market volatility has many applications in Finance, including the pricing of derivatives and the estimation of risk measures such as Value at Risk.
 
 ## Data
 
@@ -52,9 +52,46 @@ RV = \sqrt \sum r^2_t
 \end{align}
 ```
 
+The RV data is sourced from the [Oxford Man Realised Library](https://oxford-man.ox.ac.uk/) which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices.
+
+```{R loading in data}
+#Sourcing RV data from the Oxford Man Realized Library
+
+temp <- tempfile()
+download.file("https://github.com/onnokleen/mfGARCH/raw/v0.1.9/data-raw/OxfordManRealizedVolatilityIndices.zip",temp)
+data <- read.csv(unz(temp, "oxfordmanrealizedvolatilityindices.csv"))
+unlink(temp)
 
 
 
+par(mfrow=c(2,2), mar=c(3,3,2,2))
+plot(x=as.Date(data[data$Symbol=='.SPX','X']), y=data[data$Symbol=='.SPX','rv5'], type='l', xlab='Date', ylab='RV', main='S&P Daily RV', col='blue', ylim=c(0,0.008))
+plot(x=as.Date(data[data$Symbol=='.FTSE','X']), y=data[data$Symbol=='.FTSE','rv5'], type='l', xlab='Date', ylab='RV', main='FTSE Daily RV', col='blue', ylim=c(0,0.008))
+plot(x=as.Date(data[data$Symbol=='.GDAXI','X']), y=data[data$Symbol=='.GDAXI','rv5'], type='l', xlab='Date', ylab='RV', main='DAX Daily RV', col='blue', ylim=c(0,0.008))
+plot(x=as.Date(data[data$Symbol=='.N225','X']), y=data[data$Symbol=='.N225','rv5'], type='l', xlab='Date', ylab='RV', main='Nikkei Daily RV', col='blue', ylim=c(0,0.008))
+
+```
+
+
+From a visual inspection of the examples above, we can see that realised volatility appears highly non-stationary. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.
+
+Furthermore, spikes in RV appear to happen around the same times across markets. This provides our main motivation for modelling RV via a VAR specification whereby we can seek to capture the dynamic interrelationships between global equity markets.
+
+For ease of modelling and in order to bring the data closer to normality we will work with the log transformed variable $log(RV_t)$.
+
+```{r}
+
+par(mfrow=c(2,2), mar=c(3,3,2,2))
+plot(x=as.Date(data[data$Symbol=='.SPX','X']), y=log(data[data$Symbol=='.SPX','rv5']), type='l', xlab='Date', ylab='RV', main='S&P Daily RV', col='blue')
+plot(x=as.Date(data[data$Symbol=='.FTSE','X']), y=log(data[data$Symbol=='.FTSE','rv5']), type='l', xlab='Date', ylab='RV', main='FTSE Daily RV', col='blue')
+plot(x=as.Date(data[data$Symbol=='.GDAXI','X']), y=log(data[data$Symbol=='.GDAXI','rv5']), type='l', xlab='Date', ylab='RV', main='DAX Daily RV', col='blue')
+plot(x=as.Date(data[data$Symbol=='.N225','X']), y=log(data[data$Symbol=='.N225','rv5']), type='l', xlab='Date', ylab='RV', main='Nikkei Daily RV', col='blue')
+
+
+```
+
+
+## The Model
 
 
 
