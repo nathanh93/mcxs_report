@@ -39,7 +39,7 @@ Realised variance is defined as the sum of squared returns over specific period:
 Realised\,Variance = \sum r^2_t
 \end{align}
 ```
-Where $r_t$ is defined as the log return over a predetermined interval, for example 5 minutes:
+Where $p_t$ denotes the price of an asset at time t and $r_t$ is defined as the log return over a predetermined interval, for example 5 minutes:
 ```{=tex}
 \begin{align}
 r_t = log(p_t / p_{t-1})
@@ -54,7 +54,9 @@ RV = \sqrt{\sum r^2_t}
 
 The RV data is sourced from the [Oxford Man Realised Library](https://oxford-man.ox.ac.uk/) which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices.
 
+##### Figure 1. Time series plots of original values {style="text-align: center;"}
 ```{R loading in data}
+
 #Sourcing RV data from the Oxford Man Realized Library
 
 temp <- tempfile()
@@ -62,16 +64,34 @@ download.file("https://github.com/onnokleen/mfGARCH/raw/v0.1.9/data-raw/OxfordMa
 data <- read.csv(unz(temp, "oxfordmanrealizedvolatilityindices.csv"))
 unlink(temp)
 
+#Putting the RV data in a dataframe
 
+SPX = na.omit(xts::xts(data[data$Symbol=='.SPX', 'rv5'],as.Date(data[data$Symbol=='.SPX', 'X'])))
+FTSE = na.omit(xts::xts(data[data$Symbol=='.FTSE', 'rv5'],as.Date(data[data$Symbol=='.FTSE', 'X'])))
+DAX = na.omit(xts::xts(data[data$Symbol=='.GDAXI', 'rv5'],as.Date(data[data$Symbol=='.GDAXI', 'X'])))
+NIKKEI = na.omit(xts::xts(data[data$Symbol=='.N225', 'rv5'],as.Date(data[data$Symbol=='.N225', 'X'])))
+
+df <- as.data.frame(
+  merge(SPX, 
+        FTSE, 
+        DAX, 
+        NIKKEI))
+
+colnames(df) <- c("S&P Daily RV","FTSE Daily RV","DAX Daily RV","Nikkei Daily RV")
+dates <- as.Date(rownames(df),format = "%Y-%m-%d")
+titles <- c("S&P Daily RV","FTSE Daily RV","DAX Daily RV","Nikkei Daily RV")
+
+#Plotting the original values of 4 indices 
 
 par(mfrow=c(2,2), mar=c(3,3,2,2))
-plot(x=as.Date(data[data$Symbol=='.SPX','X']), y=data[data$Symbol=='.SPX','rv5'], type='l', xlab='Date', ylab='RV', main='S&P Daily RV', col='blue', ylim=c(0,0.008))
-plot(x=as.Date(data[data$Symbol=='.FTSE','X']), y=data[data$Symbol=='.FTSE','rv5'], type='l', xlab='Date', ylab='RV', main='FTSE Daily RV', col='blue', ylim=c(0,0.008))
-plot(x=as.Date(data[data$Symbol=='.GDAXI','X']), y=data[data$Symbol=='.GDAXI','rv5'], type='l', xlab='Date', ylab='RV', main='DAX Daily RV', col='blue', ylim=c(0,0.008))
-plot(x=as.Date(data[data$Symbol=='.N225','X']), y=data[data$Symbol=='.N225','rv5'], type='l', xlab='Date', ylab='RV', main='Nikkei Daily RV', col='blue', ylim=c(0,0.008))
-
+for (i in 1:ncol(df)){
+  plot(dates, y = df[,i], type = "l", 
+       main = titles[i], ylab = "RV", xlab = "Date",
+       col = 'blue',
+       ylim = c(min(na.omit(df[,i])),max(na.omit(df[,i]))))
+}
 ```
-
+# 
 
 From a visual inspection of the examples above, we can see that realised volatility appears highly non-stationary. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.
 
@@ -79,19 +99,33 @@ Furthermore, spikes in RV appear to happen around the same times across markets.
 
 For ease of modelling and in order to bring the data closer to normality we will work with the log transformed variable $log(rv_t)$.
 
+##### Figure 2. Time series plots of log transformed values {style="text-align: center;"}
 ```{r}
+#Storing log transformed variables in a dataframe
+
+df.log <- as.data.frame(
+  merge(log(SPX), 
+        log(FTSE), 
+        log(DAX), 
+        log(NIKKEI)))
+colnames(df.log) <- c("S&P log RV","FTSE log RV","DAX Daily RV","Nikkei log RV")
+dates <- as.Date(rownames(df.log),format = "%Y-%m-%d")
+new_titles <- c("S&P log RV","FTSE log RV","DAX log RV","Nikkei log RV")
+
+#Plotting the log transformed values of 4 indices
 
 par(mfrow=c(2,2), mar=c(3,3,2,2))
-plot(x=as.Date(data[data$Symbol=='.SPX','X']), y=log(data[data$Symbol=='.SPX','rv5']), type='l', xlab='Date', ylab='RV', main='S&P log RV', col='blue')
-plot(x=as.Date(data[data$Symbol=='.FTSE','X']), y=log(data[data$Symbol=='.FTSE','rv5']), type='l', xlab='Date', ylab='RV', main='FTSE log RV', col='blue')
-plot(x=as.Date(data[data$Symbol=='.GDAXI','X']), y=log(data[data$Symbol=='.GDAXI','rv5']), type='l', xlab='Date', ylab='RV', main='DAX log RV', col='blue')
-plot(x=as.Date(data[data$Symbol=='.N225','X']), y=log(data[data$Symbol=='.N225','rv5']), type='l', xlab='Date', ylab='RV', main='Nikkei log RV', col='blue')
-
+for (i in 1:ncol(df.log)){
+  plot(dates, y = df.log[,i], type = "l", ylab = "RV", xlab = "Date",
+       main = new_titles[i],
+       col = 'blue'
+       )
+}
 
 ```
 
 
-## The Model
+## Model
 
 The model will follow the standard $VAR(p)$ setup as follows:
 
