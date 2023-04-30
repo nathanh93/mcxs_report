@@ -31,6 +31,19 @@ This paper seeks to examine the effectiveness of Bayesian VARs as a method for f
 
 The models will be applied to daily data on realised variances occurring on a group of global stock indices. Stock indices serve as gauges of overall equity market performance and are generally categorised by country. For this analysis we will focus on 10 major global indices, the SPX, DJI, FTSE, GDAXI, FCHI, STOXX50E, N225, AORD, HSI and the STI.
 
+| Code     | Index Name    | Region   |
+|----------|---------------|----------|
+| SPX      | S&P 500       | US       |
+| DJI      | Dow Jones     | US       |
+| FTSE     | FTSE 100      | UK       |
+| GDAXI    | DAX           | Germany  |
+| FCHI     | CAC40         | France   |
+| STOXX50E | EURO STOXX    | Europe   |
+| N225     | NIKKEI 225    | Japan    |
+| AORD     | All Ordinaries| Australia|
+| HSI      | Hang Seng     | Hong Kong|
+| STI      | Straits Times | Singapore|
+
 Realised variance is a measure of historical volatility occuring in financial time series constructed from intraday high frequency return data.
 
 Realised variance is defined as the sum of squared returns over specific period:
@@ -39,7 +52,7 @@ Realised variance is defined as the sum of squared returns over specific period:
 Realised\,Variance = \sum r^2_t
 \end{align}
 ```
-Where $r_t$ is defined as the log return over a predetermined interval, for example 5 minutes:
+Where $p_t$ denotes the price of an asset at time t and $r_t$ is defined as the log return over a predetermined interval, for example 5 minutes:
 ```{=tex}
 \begin{align}
 r_t = log(p_t / p_{t-1})
@@ -52,9 +65,11 @@ RV = \sqrt{\sum r^2_t}
 \end{align}
 ```
 
-The RV data is sourced from the [Oxford Man Realised Library](https://oxford-man.ox.ac.uk/) which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices.
+The RV data is sourced from the [Oxford Man Realised Library](https://oxford-man.ox.ac.uk/) which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. The data set has been employed widely in the literatur for empirical volatility studies, such as by Dutta and Das ([2022](https://onlinelibrary.wiley.com/doi/full/10.1002/fut.22372)) and Brandi and Di Matteo ([2022](https://arxiv.org/pdf/2201.10466.pdf)). For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices. The data ranges between January 2000 and June 2018.
 
+##### Figure 1. Time series plots of original values {style="text-align: center;"}
 ```{R loading in data}
+
 #Sourcing RV data from the Oxford Man Realized Library
 
 temp <- tempfile()
@@ -62,36 +77,88 @@ download.file("https://github.com/onnokleen/mfGARCH/raw/v0.1.9/data-raw/OxfordMa
 data <- read.csv(unz(temp, "oxfordmanrealizedvolatilityindices.csv"))
 unlink(temp)
 
+#Putting the RV data in a dataframe
 
+SPX = na.omit(xts::xts(data[data$Symbol=='.SPX', 'rv5'],as.Date(data[data$Symbol=='.SPX', 'X'])))
+FTSE = na.omit(xts::xts(data[data$Symbol=='.FTSE', 'rv5'],as.Date(data[data$Symbol=='.FTSE', 'X'])))
+DAX = na.omit(xts::xts(data[data$Symbol=='.GDAXI', 'rv5'],as.Date(data[data$Symbol=='.GDAXI', 'X'])))
+NIKKEI = na.omit(xts::xts(data[data$Symbol=='.N225', 'rv5'],as.Date(data[data$Symbol=='.N225', 'X'])))
+
+df <- as.data.frame(
+  merge(SPX, 
+        FTSE, 
+        DAX, 
+        NIKKEI))
+
+colnames(df) <- c("S&P Daily RV","FTSE Daily RV","DAX Daily RV","Nikkei Daily RV")
+dates <- as.Date(rownames(df),format = "%Y-%m-%d")
+titles <- c("S&P Daily RV","FTSE Daily RV","DAX Daily RV","Nikkei Daily RV")
+
+#Plotting the original values of 4 indices 
 
 par(mfrow=c(2,2), mar=c(3,3,2,2))
-plot(x=as.Date(data[data$Symbol=='.SPX','X']), y=data[data$Symbol=='.SPX','rv5'], type='l', xlab='Date', ylab='RV', main='S&P Daily RV', col='blue', ylim=c(0,0.008))
-plot(x=as.Date(data[data$Symbol=='.FTSE','X']), y=data[data$Symbol=='.FTSE','rv5'], type='l', xlab='Date', ylab='RV', main='FTSE Daily RV', col='blue', ylim=c(0,0.008))
-plot(x=as.Date(data[data$Symbol=='.GDAXI','X']), y=data[data$Symbol=='.GDAXI','rv5'], type='l', xlab='Date', ylab='RV', main='DAX Daily RV', col='blue', ylim=c(0,0.008))
-plot(x=as.Date(data[data$Symbol=='.N225','X']), y=data[data$Symbol=='.N225','rv5'], type='l', xlab='Date', ylab='RV', main='Nikkei Daily RV', col='blue', ylim=c(0,0.008))
-
+for (i in 1:ncol(df)){
+  plot(dates, y = df[,i], type = "l", 
+       main = titles[i], ylab = "RV", xlab = "Date",
+       col = 'blue',
+       ylim = c(min(na.omit(df[,i])),max(na.omit(df[,i]))))
+}
 ```
+# 
 
-
-From a visual inspection of the examples above, we can see that realised volatility appears highly non-stationary. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.
+As each of the series follow a similar general pattern only four of the ten indices are plotted for visualisation above. From a visual inspection of the examples above, we can see that realised volatility appears highly non-stationary. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.
 
 Furthermore, spikes in RV appear to happen around the same times across markets. This provides our main motivation for modelling RV via a VAR specification whereby we can seek to capture the dynamic interrelationships between global equity markets.
 
 For ease of modelling and in order to bring the data closer to normality we will work with the log transformed variable $log(rv_t)$.
 
+##### Figure 2. Time series plots of log transformed values {style="text-align: center;"}
 ```{r}
+#Storing log transformed variables in a dataframe
+
+df.log <- as.data.frame(
+  merge(log(SPX), 
+        log(FTSE), 
+        log(DAX), 
+        log(NIKKEI)))
+colnames(df.log) <- c("S&P log RV","FTSE log RV","DAX Daily RV","Nikkei log RV")
+dates <- as.Date(rownames(df.log),format = "%Y-%m-%d")
+new_titles <- c("S&P log RV","FTSE log RV","DAX log RV","Nikkei log RV")
+
+#Plotting the log transformed values of 4 indices
 
 par(mfrow=c(2,2), mar=c(3,3,2,2))
-plot(x=as.Date(data[data$Symbol=='.SPX','X']), y=log(data[data$Symbol=='.SPX','rv5']), type='l', xlab='Date', ylab='RV', main='S&P log RV', col='blue')
-plot(x=as.Date(data[data$Symbol=='.FTSE','X']), y=log(data[data$Symbol=='.FTSE','rv5']), type='l', xlab='Date', ylab='RV', main='FTSE log RV', col='blue')
-plot(x=as.Date(data[data$Symbol=='.GDAXI','X']), y=log(data[data$Symbol=='.GDAXI','rv5']), type='l', xlab='Date', ylab='RV', main='DAX log RV', col='blue')
-plot(x=as.Date(data[data$Symbol=='.N225','X']), y=log(data[data$Symbol=='.N225','rv5']), type='l', xlab='Date', ylab='RV', main='Nikkei log RV', col='blue')
+for (i in 1:ncol(df.log)){
+  plot(dates, y = df.log[,i], type = "l", ylab = "RV", xlab = "Date",
+       main = new_titles[i],
+       col = 'blue'
+       )
+}
 
+```
+#
+
+Conducting Augmented Dickey-Fuller tests on the log transformed RVs to test for stationarity results in the rejection of the null hypothesis of non-stationarity for all series at the 0.05 level. This implies stationarity in the log transformed variables.
+
+
+##### ADF Test Results for Log Transformed 5 Minute RVs {style="text-align: center;"}
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+
+df = as.data.frame(matrix(nrow=0, ncol=2))
+colnames(df) = c('Index','P Value')
+
+for (i in c('.SPX', '.DJI', '.FTSE', '.GDAXI','.FCHI','.STOXX50E','.N225','.AORD','.HSI','.STI')){
+  testres = tseries::adf.test(log(data[data$Symbol=='.SPX','rv5']))
+  p = testres$p.value
+  new = c(i, p)
+  df[nrow(df)+1, ] = new
+}
+
+formattable::formattable(df)
 
 ```
 
-
-## The Model
+## Model
 
 The model will follow the standard $VAR(p)$ setup as follows:
 
