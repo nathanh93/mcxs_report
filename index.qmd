@@ -65,7 +65,7 @@ RV = \sqrt{\sum r^2_t}
 \end{align}
 ```
 
-The RV data is sourced from the [Oxford Man Realised Library](https://oxford-man.ox.ac.uk/) which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices.
+The RV data is sourced from the [Oxford Man Realised Library](https://oxford-man.ox.ac.uk/) which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. The data set has been employed widely in the literatur for empirical volatility studies, such as by Dutta and Das ([2022](https://onlinelibrary.wiley.com/doi/full/10.1002/fut.22372)) and Brandi and Di Matteo ([2022](https://arxiv.org/pdf/2201.10466.pdf)). For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices. The data ranges between January 2000 and June 2018.
 
 ##### Figure 1. Time series plots of original values {style="text-align: center;"}
 ```{R loading in data}
@@ -106,7 +106,7 @@ for (i in 1:ncol(df)){
 ```
 # 
 
-From a visual inspection of the examples above, we can see that realised volatility appears highly non-stationary. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.
+As each of the series follow a similar general pattern only four of the ten indices are plotted for visualisation above. From a visual inspection of the examples above, we can see that realised volatility appears highly non-stationary. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.
 
 Furthermore, spikes in RV appear to happen around the same times across markets. This provides our main motivation for modelling RV via a VAR specification whereby we can seek to capture the dynamic interrelationships between global equity markets.
 
