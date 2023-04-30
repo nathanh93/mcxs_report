@@ -92,7 +92,11 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#objective-and-motivation" id="toc-objective-and-motivation" class="nav-link" data-scroll-target="#objective-and-motivation">Objective and Motivation</a></li>
   <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
-  <li><a href="#the-model" id="toc-the-model" class="nav-link" data-scroll-target="#the-model">The Model</a></li>
+  </ul></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1"></a>
+  <ul class="collapse">
+  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -139,12 +143,73 @@ ul.task-list li input[type="checkbox"] {
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data">Data</h2>
 <p>The models will be applied to daily data on realised variances occurring on a group of global stock indices. Stock indices serve as gauges of overall equity market performance and are generally categorised by country. For this analysis we will focus on 10 major global indices, the SPX, DJI, FTSE, GDAXI, FCHI, STOXX50E, N225, AORD, HSI and the STI.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Code</th>
+<th>Index Name</th>
+<th>Region</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SPX</td>
+<td>S&amp;P 500</td>
+<td>US</td>
+</tr>
+<tr class="even">
+<td>DJI</td>
+<td>Dow Jones</td>
+<td>US</td>
+</tr>
+<tr class="odd">
+<td>FTSE</td>
+<td>FTSE 100</td>
+<td>UK</td>
+</tr>
+<tr class="even">
+<td>GDAXI</td>
+<td>DAX</td>
+<td>Germany</td>
+</tr>
+<tr class="odd">
+<td>FCHI</td>
+<td>CAC40</td>
+<td>France</td>
+</tr>
+<tr class="even">
+<td>STOXX50E</td>
+<td>EURO STOXX</td>
+<td>Europe</td>
+</tr>
+<tr class="odd">
+<td>N225</td>
+<td>NIKKEI 225</td>
+<td>Japan</td>
+</tr>
+<tr class="even">
+<td>AORD</td>
+<td>All Ordinaries</td>
+<td>Australia</td>
+</tr>
+<tr class="odd">
+<td>HSI</td>
+<td>Hang Seng</td>
+<td>Hong Kong</td>
+</tr>
+<tr class="even">
+<td>STI</td>
+<td>Straits Times</td>
+<td>Singapore</td>
+</tr>
+</tbody>
+</table>
 <p>Realised variance is a measure of historical volatility occuring in financial time series constructed from intraday high frequency return data.</p>
 <p>Realised variance is defined as the sum of squared returns over specific period:</p>
 <span class="math display">\[\begin{align}
 Realised\,Variance = \sum r^2_t
 \end{align}\]</span>
-<p>Where <span class="math inline">\(r_t\)</span> is defined as the log return over a predetermined interval, for example 5 minutes:</p>
+<p>Where <span class="math inline">\(p_t\)</span> denotes the price of an asset at time t and <span class="math inline">\(r_t\)</span> is defined as the log return over a predetermined interval, for example 5 minutes:</p>
 <span class="math display">\[\begin{align}
 r_t = log(p_t / p_{t-1})
 \end{align}\]</span>
@@ -152,23 +217,139 @@ r_t = log(p_t / p_{t-1})
 <span class="math display">\[\begin{align}
 RV = \sqrt{\sum r^2_t}
 \end{align}\]</span>
-<p>The RV data is sourced from the <a href="https://oxford-man.ox.ac.uk/">Oxford Man Realised Library</a> which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices.</p>
+<p>The RV data is sourced from the <a href="https://oxford-man.ox.ac.uk/">Oxford Man Realised Library</a> which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. The data set has been employed widely in the literatur for empirical volatility studies, such as by Dutta and Das (<a href="https://onlinelibrary.wiley.com/doi/full/10.1002/fut.22372">2022</a>) and Brandi and Di Matteo (<a href="https://arxiv.org/pdf/2201.10466.pdf">2022</a>). For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices. The data ranges between January 2000 and June 2018.</p>
+<section id="figure-1.-time-series-plots-of-original-values" class="level5" style="text-align: center;">
+<h5 style="text-align: center;" class="anchored" data-anchor-id="figure-1.-time-series-plots-of-original-values">Figure 1. Time series plots of original values</h5>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/loading in data-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>From a visual inspection of the examples above, we can see that realised volatility appears highly non-stationary. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.</p>
+</section>
+</section>
+</section>
+<section id="section" class="level1">
+<h1></h1>
+<p>As each of the series follow a similar general pattern only four of the ten indices are plotted for visualisation above. From a visual inspection of the examples above, we can see that realised volatility appears highly non-stationary. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.</p>
 <p>Furthermore, spikes in RV appear to happen around the same times across markets. This provides our main motivation for modelling RV via a VAR specification whereby we can seek to capture the dynamic interrelationships between global equity markets.</p>
-<p>For ease of modelling and in order to bring the data closer to normality we will work with the log transformed variable <span class="math inline">\(log(RV_t)\)</span>.</p>
+<p>For ease of modelling and in order to bring the data closer to normality we will work with the log transformed variable <span class="math inline">\(log(rv_t)\)</span>.</p>
+<section id="figure-2.-time-series-plots-of-log-transformed-values" class="level5" style="text-align: center;">
+<h5 style="text-align: center;" class="anchored" data-anchor-id="figure-2.-time-series-plots-of-log-transformed-values">Figure 2. Time series plots of log transformed values</h5>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
-<section id="the-model" class="level2">
-<h2 class="anchored" data-anchor-id="the-model">The Model</h2>
+</section>
+<section id="section-1" class="level1">
+<h1></h1>
+<p>Conducting Augmented Dickey-Fuller tests on the log transformed RVs to test for stationarity results in the rejection of the null hypothesis of non-stationarity for all series at the 0.05 level. This implies stationarity in the log transformed variables.</p>
+<section id="adf-test-results-for-log-transformed-5-minute-rvs" class="level5" style="text-align: center;">
+<h5 style="text-align: center;" class="anchored" data-anchor-id="adf-test-results-for-log-transformed-5-minute-rvs">ADF Test Results for Log Transformed 5 Minute RVs</h5>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+Index
+</th>
+<th style="text-align:right;">
+P Value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+.SPX
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+.DJI
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+.FTSE
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+.GDAXI
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+.FCHI
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+.STOXX50E
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+.N225
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+.AORD
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+.HSI
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+.STI
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+</tbody>
+
+</table>
+</div>
+</div>
+</section>
+<section id="model" class="level2">
+<h2 class="anchored" data-anchor-id="model">Model</h2>
 <p>The model will follow the standard <span class="math inline">\(VAR(p)\)</span> setup as follows:</p>
 <span class="math display">\[\begin{align}
 rv_t &amp;= \mu_0 + A_1 rv_{t-1} + \dots + A_p rv_{t-p} + \epsilon_t\\
