@@ -136,7 +136,27 @@ for (i in 1:ncol(df.log)){
 }
 
 ```
+#
 
+Conducting Augmented Dickey-Fuller tests on the log transformed RVs to test for stationarity results in the rejection of the null hypothesis of non-stationarity for all series at the 0.05 level. This implies stationarity in the log transformed variables.
+
+
+##### ADF Test Results for Log Transformed 5 Minute RVs {style="text-align: center;"}
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+
+df = as.data.frame(matrix(nrow=0, ncol=2))
+colnames(df) = c('Index','P Value')
+
+for (i in c('.SPX', '.DJI', '.FTSE', '.GDAXI','.FCHI','.STOXX50E','.N225','.AORD','.HSI','.STI')){
+  testres = tseries::adf.test(log(data[data$Symbol=='.SPX','rv5']))
+  p = testres$p.value
+  new = c(i, p)
+  df[nrow(df)+1, ] = new
+}
+
+formattable::formattable(df)
+
+```
 
 ## Model
 
