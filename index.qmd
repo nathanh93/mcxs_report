@@ -31,6 +31,19 @@ This paper seeks to examine the effectiveness of Bayesian VARs as a method for f
 
 The models will be applied to daily data on realised variances occurring on a group of global stock indices. Stock indices serve as gauges of overall equity market performance and are generally categorised by country. For this analysis we will focus on 10 major global indices, the SPX, DJI, FTSE, GDAXI, FCHI, STOXX50E, N225, AORD, HSI and the STI.
 
+| Code     | Index Name    | Region   |
+|----------|---------------|----------|
+| SPX      | S&P 500       | US       |
+| DJI      | Dow Jones     | US       |
+| FTSE     | FTSE 100      | UK       |
+| GDAXI    | DAX           | Germany  |
+| FCHI     | CAC40         | France   |
+| STOXX50E | EURO STOXX    | Europe   |
+| N225     | NIKKEI 225    | Japan    |
+| AORD     | All Ordinaries| Australia|
+| HSI      | Hang Seng     | Hong Kong|
+| STI      | Straits Times | Singapore|
+
 Realised variance is a measure of historical volatility occuring in financial time series constructed from intraday high frequency return data.
 
 Realised variance is defined as the sum of squared returns over specific period:
