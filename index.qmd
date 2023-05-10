@@ -185,3 +185,71 @@ Assessment of prediction accuracy via the RMSEs will facilitate comparison of va
 
 The significance of being able to reliably forecast market volatility is primarily seen in the context of financial asset pricing. Volatility of the underlying asset is one of the crucial inputs required in options pricing. With reliable forecasts of stock index volatility one can assess the degree to which options quoted in the market are under or over estimating volatility relative to what is indicated by the historical realised dynamics.
 
+
+
+# Modelling Framework
+
+
+Gibbs Sampler code for t-distributed errors:
+
+```{r, echo=TRUE, eval=FALSE}
+
+#Bivariate randome walk data
+rw_data = data.frame(matrix(nrow=1000, ncol=2))
+rw_data[,1] = cumsum(rnorm(1000,0,1))
+rw_data[,2] = cumsum(rnorm(1000,0,1))
+
+p=1
+N=2
+
+Y_ext = (rw_data[(p+1):nrow(rw_data),c(1,2)]) #removing first p observations
+X_ext = matrix(1,nrow(Y_ext),1)               #Creating X matrix
+for (i in 1:p){
+  X_ext     = cbind(X_ext, (rw_data[(p+1):nrow(rw_data)-i,c(1,2)]))
+}
+
+Y_ext = as.matrix(Y_ext)
+X_ext = as.matrix(X_ext)
+
+
+
+#Setting priors and initialising parameters
+A.gprior = matrix(0, 3, 2)
+A_V.gprior = diag(1,3)
+Sigma_s.gprior = matrix(1, 2, 2)
+Sigma_v.gprior = 3
+lambda_s.gprior = 1
+lambda_v.gprior = 1
+
+lambda.draw = lambda_s.gprior/rchisq(1, lambda_v.gprior)
+lambda.draw = 1
+
+Sigma.posterior.draws = array(NA, c(2,2,100))
+A.posterior.draws = array(NA, c(3,2,100))
+
+for (s in 1:100){
+  
+  lambda.gprior.diag = diag(lambda.draw, nrow(Y_ext))
+  
+  A_V.posterior     = solve(t(X_ext)%*%solve(lambda.gprior.diag)%*%X_ext + solve(A_V.gprior))
+  A.posterior       = A_V.posterior%*%(t(X_ext)%*%solve(lambda.gprior.diag)%*%Y_ext + solve(A_V.gprior)%*%A.gprior)
+  Sigma_s.posterior = t(Y_ext)%*%lambda.gprior.diag%*%Y_ext + t(A.gprior)%*%solve(A_V.gprior)%*%A.gprior + Sigma_s.gprior - t(A.posterior)%*%solve(A_V.posterior)%*%A.posterior
+  Sigma_v.posterior = nrow(Y_ext) + Sigma_v.gprior
+  
+  Sigma.posterior.draws[,,s] = solve(rWishart(1, Sigma_v.posterior, solve(Sigma_s.posterior))[,,1])
+  
+  A.posterior.draws[,,s] = matrix(mvtnorm::rmvnorm(1, mean=as.vector(A.posterior), sigma=Sigma.posterior.draws[,,s]%x%A_V.posterior), ncol=2)
+  
+  lambda_s.posterior = sum(diag(solve(Sigma.posterior.draws[,,s])%*%t(Y_ext - X_ext%*%A.posterior.draws[,,s])%*%(Y_ext - X_ext%*%A.posterior.draws[,,s]))) + lambda_s.gprior
+  lambda_v.posterior = nrow(Y_ext)*2 + lambda_v.gprior
+  
+  lambda.draw = lambda_s.posterior / rchisq(1, lambda_v.posterior)
+  
+}
+
+
+apply(Sigma.posterior.draws, 1:2, mean)
+apply(A.posterior.draws, 1:2, mean)
+
+
+```
