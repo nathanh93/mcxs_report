@@ -189,12 +189,68 @@ The significance of being able to reliably forecast market volatility is primari
 
 # Modelling Framework
 
+## Estimation Procedure for the Baseline Model
+
+The baseline model is as follows:
+
+```{=tex}
+\begin{align}
+Y &= XA + U \\
+Y|X,A,\Sigma &\sim MN_{T \times N} (XA, \Sigma, I_T)
+\end{align}
+```
+
+This implies the following form for the kernel of the likelihood function:
+
+```{=tex}
+\begin{align}
+L(A,\Sigma|Y,X) \propto det(\Sigma)^{-\frac{T}{2}}exp(-\frac{1}{2}tr[\Sigma^{-1}(Y-XA)'(Y-XA)])
+\end{align}
+```
+
+We assume the usual matrix normal and inverse Wishart natural conjugate priors for $A$ and $\Sigma$:
+
+```{=tex}
+\begin{align}
+p(A,\Sigma) &= p(A|\Sigma)p(\Sigma) \\
+A|\Sigma &\sim MN_{K \times N}(\underline{A},\Sigma,\underline{V}) \\
+\Sigma &\sim IW_N(\underline{S},\underline{\nu})
+\end{align}
+```
+
+The posterior distribution is given by the product of the likelihood and the priors.
+
+```{=tex}
+\begin{align}
+p(A,\Sigma|Y,X) &\propto \det(\Sigma)^{-\frac{T}{2}} \\
+&\times exp(-\frac{1}{2}tr[\Sigma^{-1}(Y-XA)'(Y-XA)]) \\
+&\times \det(\Sigma)^{-\frac{N+K+\underline{v}+1}{2}} \\
+&\times exp(-\frac{1}{2}tr[\Sigma^{-1}(A-\underline{A})'\underline(V)^{-1}(A-\underline{A})]) \\
+&\times exp(-\frac{1}{2}tr[\Sigma^{-1}\underline{S}])
+\end{align}
+```
+
+
+Combining the terms and completing the squares for the terms within the square brackets yields the following posterior distributions for $A$ and $\Sigma$:
+
+```{=tex}
+\begin{align}
+p(A|Y,X,\Sigma) &= MN_{K \times N}(\bar{A}, \Sigma, \bar{V}) \\
+p(\Sigma|Y,X) &= IW_N(\bar{S},\bar{\nu}) \\
+\\
+\bar{V} &= (X'X + \underline{V}^{-1})^{-1} \\
+\bar{A} &= \bar{V}(X'Y + \underline{V}^{-1}\underline{A}) \\
+\bar{\nu} &= T + \underline{\nu} \\
+\bar{S} &= \underline{S} + Y'Y + \underline{A}'\underline{V}^{-1}\underline{A} - \bar{A}'\bar{V}^{-1}\bar{A} \\
+
+\end{align}
+```
 
 Gibbs Sampler code for t-distributed errors:
 
 ```{r, echo=TRUE, eval=FALSE}
 
-#Bivariate randome walk data
+#Bivariate random walk data
 rw_data = data.frame(matrix(nrow=1000, ncol=2))
 rw_data[,1] = cumsum(rnorm(1000,0,1))
 rw_data[,2] = cumsum(rnorm(1000,0,1))
