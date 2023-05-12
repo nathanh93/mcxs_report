@@ -246,9 +246,135 @@ p(\Sigma|Y,X) &= IW_N(\bar{S},\bar{\nu}) \\
 \end{align}
 ```
 
+Since the above fully characterises the joint posterior distribution we can then sample from these directly using a suitably chosen prior. A common prior for unit root nonstationary variables is the 'Minnesota Prior', which assumes that the variables follow a random walk. The prior mean $\underline{A}$ is set to an identity matrix for the first lag and zeroes elsewhere. Meanwhile the column specific covariance matrix for A is set according to two shrinkage hyperparameters $\kappa_1$ and $\kappa_2$ which determine the level of shrinkage around the prior mean.
+
+```{=tex}
+\begin{align}
+\underline{A} &= \begin{bmatrix} 0_{N \times 1} &  I_N  & 0_{N \times (p-1)N} \end{bmatrix} \\
+
+\underline{V} &= diag( \begin{bmatrix} \kappa_2 & \kappa_1(p^{-2}\otimes I_N') \end{bmatrix})
+
+\end{align}
+```
+
+The estimation routine can be implemented in a function in R as follows:
+
+### Posterior Estimation Function in R
+```{r, echo=TRUE}
+get_posteriors = function(S, Y, X, priors) {
+  N = ncol(Y)
+  
+  A.prior     = priors[[1]]
+  V.prior     = priors[[2]]
+  S.prior     = priors[[3]]
+  nu.prior    = priors[[4]]
+    
+  # normal-inverse Wishart posterior parameters
+  ############################################################
+  V.bar.inv   = t(X)%*%X + diag(1/diag(V.prior))
+  V.bar       = solve(V.bar.inv)
+  A.bar       = V.bar%*%(t(X)%*%Y + diag(1/diag(V.prior))%*%A.prior)
+  nu.bar      = nrow(Y) + nu.prior
+  S.bar       = S.prior + t(Y)%*%Y + t(A.prior)%*%diag(1/diag(V.prior))%*%A.prior - t(A.bar)%*%V.bar.inv%*%A.bar
+  S.bar.inv   = solve(S.bar)
+  
+  
+  # posterior draws 
+  ############################################################
+  Sigma.posterior   = rWishart(S, df=nu.bar, Sigma=S.bar.inv)
+  Sigma.posterior   = apply(Sigma.posterior,3,solve)
+  Sigma.posterior   = array(Sigma.posterior,c(N,N,S))
+  A.posterior       = array(rnorm(prod(c(dim(A.bar),S))),c(dim(A.bar),S))
+  L                 = t(chol(V.bar))
+  for (s in 1:S){
+    A.posterior[,,s]= A.bar + L%*%A.posterior[,,s]%*%chol(Sigma.posterior[,,s])
+  }
+  
+  return(list(A.posterior, Sigma.posterior))
+}
+
+```
+
+For demonstrative purposes the above code can be applied to simulated data generated from a bivariate random walk.
+
+```{r}
+rw_data = data.frame(matrix(nrow=1000, ncol=2))
+rw_data[,1] = cumsum(rnorm(1000,0,1))
+rw_data[,2] = cumsum(rnorm(1000,0,1))
+plot(rw_data[,1], type='l', ylim=c(min(rw_data), max(rw_data)), col='red', ylab='', xlab='', main='Bivariate Random Walk')
+lines(rw_data[,2], col='blue', ylab='', xlab='')
+```
+
+
+The estimation routine utilising a Minnesota Prior specification is then implemented as follows:
+
+```{r, echo=TRUE}
+p=1
+N=2
+
+Y_ext = (rw_data[(p+1):nrow(rw_data),c(1,2)]) #removing first p observations and taking logs
+X_ext = matrix(1,nrow(Y_ext),1)                                       #Creating X matrix
+for (i in 1:p){
+  X_ext     = cbind(X_ext, (rw_data[(p+1):nrow(rw_data)-i,c(1,2)]))
+}
+
+Y_ext = as.matrix(Y_ext)
+X_ext = as.matrix(X_ext)
+
+A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
+Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/nrow(Y_ext)
+
+kappa.1     = 0.02^2
+kappa.2     = 100
+A.pri     = matrix(0, (1+p*N), N)
+A.pri[2:3,] = diag(2)
+V.pri     = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+S.pri     = diag(diag(Sigma.hat))
+nu.pri    = N+1
+
+pris = list(A.pri, V.pri, S.pri, nu.pri)
+
+res = get_posteriors(10000, Y_ext, X_ext, pris)
+
+round(apply(res[[1]],1:2,mean),2) #A posterior mean
+round(apply(res[[2]],1:2,mean),2) #Sigma posterior mean
+
+```
+
+As shown above the estimated parameter means closely match the expected values for the data generating process.
+
+### Model Extension: T-Distributed Errors
+
+An alternative specification for the model is to relax the assumption of normally distributed errors. A T-Distribution more closely mirrors the leptokurtosis commonly seen in financial time series and as such it is a good candidate for our model of index volatility.
+
+```{=tex}
+\begin{align}
+U_t &\sim t_N(0, \Sigma, \nu) 
+\end{align}
+```
+
+As noted by ([Geweke 1993](https://onlinelibrary.wiley.com/doi/epdf/10.1002/jae.3950080504?saml_referrer)), a T-distribution for the error term can be represented by a scale mixture of normal distributions with a scaling term $\lambda$ which is Inverse Gamma 2 distributed.
+
+```{=tex}
+\begin{align}
+U|\lambda &\sim MN(0, \Sigma, \lambda I_t) \\
+\lambda &\sim IG2( s, \nu) 
+\end{align}
+```
+
+Under this specification, the likelihood takes the following form:
+
+```{=tex}
+```
+
+
+
+
+
+
 Gibbs Sampler code for t-distributed errors:
 
-```{r, echo=TRUE, eval=FALSE}
+```{r, echo=TRUE}
 
 #Bivariate random walk data
 rw_data = data.frame(matrix(nrow=1000, ncol=2))
@@ -272,15 +398,15 @@ X_ext = as.matrix(X_ext)
 #Setting priors and initialising parameters
 A.gprior = matrix(0, 3, 2)
 A_V.gprior = diag(1,3)
-Sigma_s.gprior = diag(2) # your previous matrix was singular!
+Sigma_s.gprior = diag(2)
 Sigma_v.gprior = 3
-lambda_s.gprior = 1
-lambda_v.gprior = 1
+lambda_s.gprior = 1000
+lambda_v.gprior = 1000
 
 lambda.draw = lambda_s.gprior/rchisq(1, lambda_v.gprior)
-lambda.draw = 1
+#lambda.draw = 1
 
-S = 1000 # so much easier to set all the dimensions and loops at once
+S = 1000
 
 Sigma.posterior.draws = array(NA, c(2,2,S))
 A.posterior.draws = array(NA, c(3,2,S))
@@ -289,9 +415,9 @@ for (s in 1:S){
   
   lambda.gprior.diag = diag(lambda.draw, nrow(Y_ext))
   
-  A_V.posterior     = solve(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%X_ext + solve(A_V.gprior)) #this will be MUCH faster
+  A_V.posterior     = solve(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%X_ext + solve(A_V.gprior))
   A.posterior       = A_V.posterior%*%(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + solve(A_V.gprior)%*%A.gprior)
-  Sigma_s.posterior = t(Y_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + t(A.gprior)%*%solve(A_V.gprior)%*%A.gprior + Sigma_s.gprior - t(A.posterior)%*%solve(A_V.posterior)%*%A.posterior # you had no inverse!
+  Sigma_s.posterior = t(Y_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + t(A.gprior)%*%solve(A_V.gprior)%*%A.gprior + Sigma_s.gprior - t(A.posterior)%*%solve(A_V.posterior)%*%A.posterior
   Sigma_v.posterior = nrow(Y_ext) + Sigma_v.gprior
   
   Sigma.inv.draw      = rWishart(1, Sigma_v.posterior, solve(Sigma_s.posterior))[,,1]
@@ -299,15 +425,15 @@ for (s in 1:S){
   
   A.posterior.draws[,,s] = matrix(mvtnorm::rmvnorm(1, mean=as.vector(A.posterior), sigma=Sigma.posterior.draws[,,s]%x%A_V.posterior), ncol=2)
   
-  lambda_s.posterior = sum(diag(Sigma.inv.draw%*%t(Y_ext - X_ext%*%A.posterior.draws[,,s])%*%(Y_ext - X_ext%*%A.posterior.draws[,,s]))) + lambda_s.gprior # no need to compute th inverse twice!
+  lambda_s.posterior = sum(diag(Sigma.inv.draw%*%t(Y_ext - X_ext%*%A.posterior.draws[,,s])%*%(Y_ext - X_ext%*%A.posterior.draws[,,s]))) + lambda_s.gprior
   lambda_v.posterior = nrow(Y_ext)*2 + lambda_v.gprior
   
   lambda.draw = lambda_s.posterior / rchisq(1, lambda_v.posterior)
-  lambda.posterior.draws[s] = lambda.draw # save this as well!
+  lambda.posterior.draws[s] = lambda.draw
 }
 
-apply(A.posterior.draws, 1:2, mean)
-apply(Sigma.posterior.draws, 1:2, mean)
-mean(lambda.posterior.draws)
-# All seems good!
+round(apply(A.posterior.draws, 1:2, mean),2)
+round(apply(Sigma.posterior.draws, 1:2, mean),2)
+round(mean(lambda.posterior.draws),2)
+
 ```
