@@ -163,7 +163,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </ul></li>
   <li><a href="#modelling-framework" id="toc-modelling-framework" class="nav-link" data-scroll-target="#modelling-framework">Modelling Framework</a>
   <ul class="collapse">
-  <li><a href="#estimation-procedure-for-the-baseline-model" id="toc-estimation-procedure-for-the-baseline-model" class="nav-link" data-scroll-target="#estimation-procedure-for-the-baseline-model">Estimation Procedure for the Baseline Model</a></li>
+  <li><a href="#estimation-procedure-for-the-baseline-model" id="toc-estimation-procedure-for-the-baseline-model" class="nav-link" data-scroll-target="#estimation-procedure-for-the-baseline-model">Estimation Procedure for the Baseline Model</a>
+  <ul class="collapse">
+  <li><a href="#posterior-estimation-function-in-r" id="toc-posterior-estimation-function-in-r" class="nav-link" data-scroll-target="#posterior-estimation-function-in-r">Posterior Estimation Function in R</a></li>
+  <li><a href="#model-extension-t-distributed-errors" id="toc-model-extension-t-distributed-errors" class="nav-link" data-scroll-target="#model-extension-t-distributed-errors">Model Extension: T-Distributed Errors</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -470,71 +474,191 @@ p(\Sigma|Y,X) &amp;= IW_N(\bar{S},\bar{\nu}) \\
 \bar{S} &amp;= \underline{S} + Y'Y + \underline{A}'\underline{V}^{-1}\underline{A} - \bar{A}'\bar{V}^{-1}\bar{A} \\
 
 \end{align}\]</span>
+<p>Since the above fully characterises the joint posterior distribution we can then sample from these directly using a suitably chosen prior. A common prior for unit root nonstationary variables is the ‘Minnesota Prior’, which assumes that the variables follow a random walk. The prior mean <span class="math inline">\(\underline{A}\)</span> is set to an identity matrix for the first lag and zeroes elsewhere. Meanwhile the column specific covariance matrix for A is set according to two shrinkage hyperparameters <span class="math inline">\(\kappa_1\)</span> and <span class="math inline">\(\kappa_2\)</span> which determine the level of shrinkage around the prior mean.</p>
+<span class="math display">\[\begin{align}
+\underline{A} &amp;= \begin{bmatrix} 0_{N \times 1} &amp;  I_N  &amp; 0_{N \times (p-1)N} \end{bmatrix} \\
+
+\underline{V} &amp;= diag( \begin{bmatrix} \kappa_2 &amp; \kappa_1(p^{-2}\otimes I_N') \end{bmatrix})
+
+\end{align}\]</span>
+<p>The estimation routine can be implemented in a function in R as follows:</p>
+<section id="posterior-estimation-function-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="posterior-estimation-function-in-r">Posterior Estimation Function in R</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>get_posteriors <span class="ot">=</span> <span class="cf">function</span>(S, Y, X, priors) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">=</span> <span class="fu">ncol</span>(Y)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  A.prior     <span class="ot">=</span> priors[[<span class="dv">1</span>]]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  V.prior     <span class="ot">=</span> priors[[<span class="dv">2</span>]]</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  S.prior     <span class="ot">=</span> priors[[<span class="dv">3</span>]]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  nu.prior    <span class="ot">=</span> priors[[<span class="dv">4</span>]]</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># normal-inverse Wishart posterior parameters</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="do">############################################################</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  V.bar.inv   <span class="ot">=</span> <span class="fu">t</span>(X)<span class="sc">%*%</span>X <span class="sc">+</span> <span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(V.prior))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  V.bar       <span class="ot">=</span> <span class="fu">solve</span>(V.bar.inv)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  A.bar       <span class="ot">=</span> V.bar<span class="sc">%*%</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>Y <span class="sc">+</span> <span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(V.prior))<span class="sc">%*%</span>A.prior)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  nu.bar      <span class="ot">=</span> <span class="fu">nrow</span>(Y) <span class="sc">+</span> nu.prior</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  S.bar       <span class="ot">=</span> S.prior <span class="sc">+</span> <span class="fu">t</span>(Y)<span class="sc">%*%</span>Y <span class="sc">+</span> <span class="fu">t</span>(A.prior)<span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(V.prior))<span class="sc">%*%</span>A.prior <span class="sc">-</span> <span class="fu">t</span>(A.bar)<span class="sc">%*%</span>V.bar.inv<span class="sc">%*%</span>A.bar</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  S.bar.inv   <span class="ot">=</span> <span class="fu">solve</span>(S.bar)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># posterior draws </span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="do">############################################################</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  Sigma.posterior   <span class="ot">=</span> <span class="fu">rWishart</span>(S, <span class="at">df=</span>nu.bar, <span class="at">Sigma=</span>S.bar.inv)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  Sigma.posterior   <span class="ot">=</span> <span class="fu">apply</span>(Sigma.posterior,<span class="dv">3</span>,solve)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  Sigma.posterior   <span class="ot">=</span> <span class="fu">array</span>(Sigma.posterior,<span class="fu">c</span>(N,N,S))</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  A.posterior       <span class="ot">=</span> <span class="fu">array</span>(<span class="fu">rnorm</span>(<span class="fu">prod</span>(<span class="fu">c</span>(<span class="fu">dim</span>(A.bar),S))),<span class="fu">c</span>(<span class="fu">dim</span>(A.bar),S))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  L                 <span class="ot">=</span> <span class="fu">t</span>(<span class="fu">chol</span>(V.bar))</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S){</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    A.posterior[,,s]<span class="ot">=</span> A.bar <span class="sc">+</span> L<span class="sc">%*%</span>A.posterior[,,s]<span class="sc">%*%</span><span class="fu">chol</span>(Sigma.posterior[,,s])</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(A.posterior, Sigma.posterior))</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For demonstrative purposes the above code can be applied to simulated data generated from a bivariate random walk.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The estimation routine utilising a Minnesota Prior specification is then implemented as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>p<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>N<span class="ot">=</span><span class="dv">2</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Y_ext <span class="ot">=</span> (rw_data[(p<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(rw_data),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]) <span class="co">#removing first p observations and taking logs</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>X_ext <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">1</span>,<span class="fu">nrow</span>(Y_ext),<span class="dv">1</span>)                                       <span class="co">#Creating X matrix</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>p){</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  X_ext     <span class="ot">=</span> <span class="fu">cbind</span>(X_ext, (rw_data[(p<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(rw_data)<span class="sc">-</span>i,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>Y_ext <span class="ot">=</span> <span class="fu">as.matrix</span>(Y_ext)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>X_ext <span class="ot">=</span> <span class="fu">as.matrix</span>(X_ext)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>A.hat       <span class="ot">=</span> <span class="fu">solve</span>(<span class="fu">t</span>(X_ext)<span class="sc">%*%</span>X_ext)<span class="sc">%*%</span><span class="fu">t</span>(X_ext)<span class="sc">%*%</span>Y_ext</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>Sigma.hat   <span class="ot">=</span> <span class="fu">t</span>(Y_ext<span class="sc">-</span>X_ext<span class="sc">%*%</span>A.hat)<span class="sc">%*%</span>(Y_ext<span class="sc">-</span>X_ext<span class="sc">%*%</span>A.hat)<span class="sc">/</span><span class="fu">nrow</span>(Y_ext)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>kappa<span class="fl">.1</span>     <span class="ot">=</span> <span class="fl">0.02</span><span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>kappa<span class="fl">.2</span>     <span class="ot">=</span> <span class="dv">100</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>A.pri     <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">0</span>, (<span class="dv">1</span><span class="sc">+</span>p<span class="sc">*</span>N), N)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>A.pri[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>,] <span class="ot">=</span> <span class="fu">diag</span>(<span class="dv">2</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>V.pri     <span class="ot">=</span> <span class="fu">diag</span>(<span class="fu">c</span>(kappa<span class="fl">.2</span>,kappa<span class="fl">.1</span><span class="sc">*</span>((<span class="dv">1</span><span class="sc">:</span>p)<span class="sc">^</span>(<span class="sc">-</span><span class="dv">2</span>))<span class="sc">%x%</span><span class="fu">rep</span>(<span class="dv">1</span>,N)))</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>S.pri     <span class="ot">=</span> <span class="fu">diag</span>(<span class="fu">diag</span>(Sigma.hat))</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>nu.pri    <span class="ot">=</span> N<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>pris <span class="ot">=</span> <span class="fu">list</span>(A.pri, V.pri, S.pri, nu.pri)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">get_posteriors</span>(<span class="dv">10000</span>, Y_ext, X_ext, pris)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1]  [,2]
+[1,] -0.01 -0.26
+[2,]  1.00  0.00
+[3,]  0.00  0.99</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      [,1]  [,2]
+[1,]  0.90 -0.01
+[2,] -0.01  1.04</code></pre>
+</div>
+</div>
+<p>As shown above the estimated parameter means closely match the expected values for the data generating process.</p>
+</section>
+<section id="model-extension-t-distributed-errors" class="level3">
+<h3 class="anchored" data-anchor-id="model-extension-t-distributed-errors">Model Extension: T-Distributed Errors</h3>
+<p>An alternative specification for the model is to relax the assumption of normally distributed errors. A T-Distribution more closely mirrors the leptokurtosis commonly seen in financial time series and as such it is a good candidate for our model of index volatility.</p>
+<span class="math display">\[\begin{align}
+U_t &amp;\sim t_N(0, \Sigma, \nu)
+\end{align}\]</span>
+<p>As noted by (<a href="https://onlinelibrary.wiley.com/doi/epdf/10.1002/jae.3950080504?saml_referrer">Geweke 1993</a>), a T-distribution for the error term can be represented by a scale mixture of normal distributions with a scaling term <span class="math inline">\(\lambda\)</span> which is Inverse Gamma 2 distributed.</p>
+<span class="math display">\[\begin{align}
+U|\lambda &amp;\sim MN(0, \Sigma, \lambda I_t) \\
+\lambda &amp;\sim IG2( s, \nu)
+\end{align}\]</span>
+<p>Under this specification, the likelihood takes the following form:</p>
 <p>Gibbs Sampler code for t-distributed errors:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Bivariate random walk data</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>rw_data <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">1000</span>, <span class="at">ncol=</span><span class="dv">2</span>))</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>rw_data[,<span class="dv">1</span>] <span class="ot">=</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>rw_data[,<span class="dv">2</span>] <span class="ot">=</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>p<span class="ot">=</span><span class="dv">1</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>N<span class="ot">=</span><span class="dv">2</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Y_ext <span class="ot">=</span> (rw_data[(p<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(rw_data),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]) <span class="co">#removing first p observations</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>X_ext <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">1</span>,<span class="fu">nrow</span>(Y_ext),<span class="dv">1</span>)               <span class="co">#Creating X matrix</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>p){</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  X_ext     <span class="ot">=</span> <span class="fu">cbind</span>(X_ext, (rw_data[(p<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(rw_data)<span class="sc">-</span>i,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]))</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>Y_ext <span class="ot">=</span> <span class="fu">as.matrix</span>(Y_ext)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>X_ext <span class="ot">=</span> <span class="fu">as.matrix</span>(X_ext)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">#Setting priors and initialising parameters</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>A.gprior <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">2</span>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>A_V.gprior <span class="ot">=</span> <span class="fu">diag</span>(<span class="dv">1</span>,<span class="dv">3</span>)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>Sigma_s.gprior <span class="ot">=</span> <span class="fu">diag</span>(<span class="dv">2</span>) <span class="co"># your previous matrix was singular!</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Sigma_v.gprior <span class="ot">=</span> <span class="dv">3</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>lambda_s.gprior <span class="ot">=</span> <span class="dv">1</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>lambda_v.gprior <span class="ot">=</span> <span class="dv">1</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>lambda.draw <span class="ot">=</span> lambda_s.gprior<span class="sc">/</span><span class="fu">rchisq</span>(<span class="dv">1</span>, lambda_v.gprior)</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>lambda.draw <span class="ot">=</span> <span class="dv">1</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>S <span class="ot">=</span> <span class="dv">1000</span> <span class="co"># so much easier to set all the dimensions and loops at once</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>Sigma.posterior.draws <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,S))</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>A.posterior.draws <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>,S))</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>lambda.posterior.draws <span class="ot">=</span> <span class="fu">rep</span>(<span class="cn">NA</span>,S)</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S){</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  lambda.gprior.diag <span class="ot">=</span> <span class="fu">diag</span>(lambda.draw, <span class="fu">nrow</span>(Y_ext))</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  A_V.posterior     <span class="ot">=</span> <span class="fu">solve</span>(<span class="fu">t</span>(X_ext)<span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(lambda.gprior.diag))<span class="sc">%*%</span>X_ext <span class="sc">+</span> <span class="fu">solve</span>(A_V.gprior)) <span class="co">#this will be MUCH faster</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  A.posterior       <span class="ot">=</span> A_V.posterior<span class="sc">%*%</span>(<span class="fu">t</span>(X_ext)<span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(lambda.gprior.diag))<span class="sc">%*%</span>Y_ext <span class="sc">+</span> <span class="fu">solve</span>(A_V.gprior)<span class="sc">%*%</span>A.gprior)</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  Sigma_s.posterior <span class="ot">=</span> <span class="fu">t</span>(Y_ext)<span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(lambda.gprior.diag))<span class="sc">%*%</span>Y_ext <span class="sc">+</span> <span class="fu">t</span>(A.gprior)<span class="sc">%*%</span><span class="fu">solve</span>(A_V.gprior)<span class="sc">%*%</span>A.gprior <span class="sc">+</span> Sigma_s.gprior <span class="sc">-</span> <span class="fu">t</span>(A.posterior)<span class="sc">%*%</span><span class="fu">solve</span>(A_V.posterior)<span class="sc">%*%</span>A.posterior <span class="co"># you had no inverse!</span></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  Sigma_v.posterior <span class="ot">=</span> <span class="fu">nrow</span>(Y_ext) <span class="sc">+</span> Sigma_v.gprior</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  Sigma.inv.draw      <span class="ot">=</span> <span class="fu">rWishart</span>(<span class="dv">1</span>, Sigma_v.posterior, <span class="fu">solve</span>(Sigma_s.posterior))[,,<span class="dv">1</span>]</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  Sigma.posterior.draws[,,s] <span class="ot">=</span> <span class="fu">solve</span>(Sigma.inv.draw)</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  A.posterior.draws[,,s] <span class="ot">=</span> <span class="fu">matrix</span>(mvtnorm<span class="sc">::</span><span class="fu">rmvnorm</span>(<span class="dv">1</span>, <span class="at">mean=</span><span class="fu">as.vector</span>(A.posterior), <span class="at">sigma=</span>Sigma.posterior.draws[,,s]<span class="sc">%x%</span>A_V.posterior), <span class="at">ncol=</span><span class="dv">2</span>)</span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  lambda_s.posterior <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">diag</span>(Sigma.inv.draw<span class="sc">%*%</span><span class="fu">t</span>(Y_ext <span class="sc">-</span> X_ext<span class="sc">%*%</span>A.posterior.draws[,,s])<span class="sc">%*%</span>(Y_ext <span class="sc">-</span> X_ext<span class="sc">%*%</span>A.posterior.draws[,,s]))) <span class="sc">+</span> lambda_s.gprior <span class="co"># no need to compute th inverse twice!</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  lambda_v.posterior <span class="ot">=</span> <span class="fu">nrow</span>(Y_ext)<span class="sc">*</span><span class="dv">2</span> <span class="sc">+</span> lambda_v.gprior</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  lambda.draw <span class="ot">=</span> lambda_s.posterior <span class="sc">/</span> <span class="fu">rchisq</span>(<span class="dv">1</span>, lambda_v.posterior)</span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  lambda.posterior.draws[s] <span class="ot">=</span> lambda.draw <span class="co"># save this as well!</span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean)</span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean)</span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(lambda.posterior.draws)</span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="co"># All seems good!</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Bivariate random walk data</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>rw_data <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">1000</span>, <span class="at">ncol=</span><span class="dv">2</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>rw_data[,<span class="dv">1</span>] <span class="ot">=</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>rw_data[,<span class="dv">2</span>] <span class="ot">=</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>p<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>N<span class="ot">=</span><span class="dv">2</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>Y_ext <span class="ot">=</span> (rw_data[(p<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(rw_data),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]) <span class="co">#removing first p observations</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>X_ext <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">1</span>,<span class="fu">nrow</span>(Y_ext),<span class="dv">1</span>)               <span class="co">#Creating X matrix</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>p){</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  X_ext     <span class="ot">=</span> <span class="fu">cbind</span>(X_ext, (rw_data[(p<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(rw_data)<span class="sc">-</span>i,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]))</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>Y_ext <span class="ot">=</span> <span class="fu">as.matrix</span>(Y_ext)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>X_ext <span class="ot">=</span> <span class="fu">as.matrix</span>(X_ext)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#Setting priors and initialising parameters</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>A.gprior <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">2</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>A_V.gprior <span class="ot">=</span> <span class="fu">diag</span>(<span class="dv">1</span>,<span class="dv">3</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>Sigma_s.gprior <span class="ot">=</span> <span class="fu">diag</span>(<span class="dv">2</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>Sigma_v.gprior <span class="ot">=</span> <span class="dv">3</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>lambda_s.gprior <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>lambda_v.gprior <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>lambda.draw <span class="ot">=</span> lambda_s.gprior<span class="sc">/</span><span class="fu">rchisq</span>(<span class="dv">1</span>, lambda_v.gprior)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co">#lambda.draw = 1</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>S <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>Sigma.posterior.draws <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,S))</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>A.posterior.draws <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>,S))</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>lambda.posterior.draws <span class="ot">=</span> <span class="fu">rep</span>(<span class="cn">NA</span>,S)</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S){</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  lambda.gprior.diag <span class="ot">=</span> <span class="fu">diag</span>(lambda.draw, <span class="fu">nrow</span>(Y_ext))</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  A_V.posterior     <span class="ot">=</span> <span class="fu">solve</span>(<span class="fu">t</span>(X_ext)<span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(lambda.gprior.diag))<span class="sc">%*%</span>X_ext <span class="sc">+</span> <span class="fu">solve</span>(A_V.gprior))</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>  A.posterior       <span class="ot">=</span> A_V.posterior<span class="sc">%*%</span>(<span class="fu">t</span>(X_ext)<span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(lambda.gprior.diag))<span class="sc">%*%</span>Y_ext <span class="sc">+</span> <span class="fu">solve</span>(A_V.gprior)<span class="sc">%*%</span>A.gprior)</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  Sigma_s.posterior <span class="ot">=</span> <span class="fu">t</span>(Y_ext)<span class="sc">%*%</span><span class="fu">diag</span>(<span class="dv">1</span><span class="sc">/</span><span class="fu">diag</span>(lambda.gprior.diag))<span class="sc">%*%</span>Y_ext <span class="sc">+</span> <span class="fu">t</span>(A.gprior)<span class="sc">%*%</span><span class="fu">solve</span>(A_V.gprior)<span class="sc">%*%</span>A.gprior <span class="sc">+</span> Sigma_s.gprior <span class="sc">-</span> <span class="fu">t</span>(A.posterior)<span class="sc">%*%</span><span class="fu">solve</span>(A_V.posterior)<span class="sc">%*%</span>A.posterior</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  Sigma_v.posterior <span class="ot">=</span> <span class="fu">nrow</span>(Y_ext) <span class="sc">+</span> Sigma_v.gprior</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>  Sigma.inv.draw      <span class="ot">=</span> <span class="fu">rWishart</span>(<span class="dv">1</span>, Sigma_v.posterior, <span class="fu">solve</span>(Sigma_s.posterior))[,,<span class="dv">1</span>]</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>  Sigma.posterior.draws[,,s] <span class="ot">=</span> <span class="fu">solve</span>(Sigma.inv.draw)</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>  A.posterior.draws[,,s] <span class="ot">=</span> <span class="fu">matrix</span>(mvtnorm<span class="sc">::</span><span class="fu">rmvnorm</span>(<span class="dv">1</span>, <span class="at">mean=</span><span class="fu">as.vector</span>(A.posterior), <span class="at">sigma=</span>Sigma.posterior.draws[,,s]<span class="sc">%x%</span>A_V.posterior), <span class="at">ncol=</span><span class="dv">2</span>)</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  lambda_s.posterior <span class="ot">=</span> <span class="fu">sum</span>(<span class="fu">diag</span>(Sigma.inv.draw<span class="sc">%*%</span><span class="fu">t</span>(Y_ext <span class="sc">-</span> X_ext<span class="sc">%*%</span>A.posterior.draws[,,s])<span class="sc">%*%</span>(Y_ext <span class="sc">-</span> X_ext<span class="sc">%*%</span>A.posterior.draws[,,s]))) <span class="sc">+</span> lambda_s.gprior</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  lambda_v.posterior <span class="ot">=</span> <span class="fu">nrow</span>(Y_ext)<span class="sc">*</span><span class="dv">2</span> <span class="sc">+</span> lambda_v.gprior</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>  lambda.draw <span class="ot">=</span> lambda_s.posterior <span class="sc">/</span> <span class="fu">rchisq</span>(<span class="dv">1</span>, lambda_v.posterior)</span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  lambda.posterior.draws[s] <span class="ot">=</span> lambda.draw</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1]  [,2]
+[1,] 0.11 -0.08
+[2,] 0.99  0.00
+[3,] 0.00  0.99</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2]
+[1,] 1.10 0.03
+[2,] 0.03 1.05</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.01</code></pre>
+</div>
 </div>
 
 
+</section>
 </section>
 </section>
 
