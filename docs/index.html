@@ -554,16 +554,16 @@ p(\Sigma|Y,X) &amp;= IW_N(\bar{S},\bar{\nu}) \\
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1] [,2]
-[1,] -0.40 0.17
-[2,]  0.98 0.00
-[3,]  0.00 1.00</code></pre>
+<pre><code>     [,1] [,2]
+[1,] 0.03 0.06
+[2,] 1.00 0.00
+[3,] 0.00 1.00</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2]
-[1,] 1.01 0.01
-[2,] 0.01 1.02</code></pre>
+[1,] 0.97 0.05
+[2,] 0.05 0.95</code></pre>
 </div>
 </div>
 <p>As shown above the estimated parameter means closely match the expected values for the data generating process.</p>
@@ -588,6 +588,7 @@ L(A,\Sigma,\Lambda|Y,X) &amp;\propto \det(\Sigma)^{-\frac{T}{2}} \det(\lambda I_
 <p>The posteriors for <span class="math inline">\(A\)</span>, <span class="math inline">\(\Sigma\)</span> and <span class="math inline">\(\lambda\)</span> can then be derived using the likelihood and the prior distributions. The natural conjugacy of <span class="math inline">\(A\)</span> and <span class="math inline">\(\Sigma\)</span> is preserved and so the conditional posterior <span class="math inline">\(p(A,\Sigma|Y,X)\)</span> can be derived as follows.</p>
 <span class="math display">\[\begin{align}
 p(A,\Sigma|Y,X) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(A,\Sigma) \\
+\\
 &amp;= \det(\Sigma)^{-\frac{T}{2}} \det(\lambda I_T)^{-\frac{N}{2}} exp(-\frac{1}{2} tr[\Sigma^{-1} (Y-XA)' (\lambda I_T)^{-1} (Y-XA) ]) \\
 &amp;\times \det(\Sigma)^{-\frac{N+k+\underline{\nu}+1}{2}} exp(-\frac{1}{2}tr[\Sigma^{-1}(A-\underline{A})'(\underline{V})^{-1}(A-\underline{A})]) \\
 &amp;\times exp(-\frac{1}{2}tr[\Sigma^{-1}\underline{S}]) \\
@@ -597,24 +598,64 @@ exp(-\frac{1}{2} tr[\Sigma^{-1}(Y'(\lambda I_T)^{-1}Y - 2A'X'(\lambda I_T)^{-1}Y
 
 
 \end{align}\]</span>
+<p>Expanding the terms inside the square brackets, followed by completing the squares, allows the above expression to be rearranged in the form of a Matrix-variate Normal Inverse Wishart kernel.</p>
+<span class="math display">\[\begin{align}
+
+p(A,\Sigma|Y,X) &amp;\sim MNIW(\bar{A},\bar{V},\bar{S},\bar{\nu}) \\
+\\
+\bar{V} &amp;= (X'(\lambda I_T)^{-1}X + \underline{V}^{-1})^{-1} \\
+\bar{A} &amp;= \bar{V}(X'(\lambda I_T)^{-1}Y + \underline{V}^{-1}\underline{A}) \\
+\bar{S} &amp;= Y'(\lambda I_T)^{-1}Y + \underline{A}'\underline{V}^{-1}\underline{A} + \underline{S} - \bar{A}'\bar{V}^{-1}\bar{A} \\
+\bar{\nu} &amp;= T + \underline{\nu}
+
+\end{align}\]</span>
+<p>The posterior distribution for <span class="math inline">\(\lambda\)</span> is then derived as follows:</p>
+<span class="math display">\[\begin{align}
+
+p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
+\\
+&amp;= \det(\Sigma)^{-\frac{T}{2}} \det(\lambda I_T)^{-\frac{N}{2}} exp(-\frac{1}{2} tr[\Sigma^{-1} (Y-XA)' (\lambda I_T)^{-1} (Y-XA) ]) \\
+&amp;\times \lambda^{-\frac{\underline{\nu_{\lambda}}+2}{2}} exp(-\frac{1}{2}\frac{\underline{s_{\lambda}}}{\lambda}) \\
+\\
+&amp;= \lambda^{-\frac{TN}{2}} exp(-\frac{1}{2}\frac{1}{\lambda} tr[\Sigma^{-1}(Y-XA)'(Y-XA)]) \\
+&amp;\times \lambda^{-\frac{\underline{\nu_{\lambda}}+2}{2}} exp(-\frac{1}{2}\frac{\underline{s_{\lambda}}}{\lambda}) \det(\Sigma)^{-\frac{T}{2}}\det(I_T)^{-\frac{N}{2}}
+\\
+&amp;= \lambda^{-\frac{TN+\underline{\nu_{\lambda}}+2}{2}} exp(-\frac{1}{2}\frac{1}{\lambda} tr[\Sigma^{-1}(Y-XA)'(Y-XA)] +\underline{s_{\lambda}}) \det(\Sigma)^{-\frac{T}{2}} \\
+\\
+\end{align}\]</span>
+<p>As such,</p>
+<span class="math display">\[\begin{align}
+
+\lambda|Y,A,\Sigma &amp;\sim IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
+\bar{s_{\lambda}} &amp;= tr[\Sigma^{-1}(Y-XA)'(Y-XA)] + \underline{s_{\lambda}} \\
+\bar{\nu_{\lambda}} &amp;= TN + \underline{\nu_{\lambda}}
+
+\end{align}\]</span>
+<p>We can then sample sequentially from the conditional posterior distributions via a Gibbs Sampler. In order to do so we initalise each of the parameters at arbitrary starting values. We then proceed accordingly:</p>
+<ol type="1">
+<li>Draw <span class="math inline">\(\Sigma^{(i)}\)</span> from the <span class="math inline">\(IW(\bar{S},\bar{\nu})\)</span> distribution</li>
+<li>Draw <span class="math inline">\(A^{(i)}\)</span> from the <span class="math inline">\(MN(\bar{A},\Sigma^{(i)}, \bar{V})\)</span> distribution</li>
+<li>Draw <span class="math inline">\(\lambda^{(i)}\)</span> from <span class="math inline">\(IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}})\)</span></li>
+</ol>
+<p>We repeat the above steps for the desired amount of iterations and collect the parameter draws in an array. We can then scrutinise the characteristics of the posterior densities using these draws.</p>
 <p>Gibbs Sampler code for t-distributed errors:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Bivariate random walk data</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>rw_data <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">1000</span>, <span class="at">ncol=</span><span class="dv">2</span>))</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>rw_data[,<span class="dv">1</span>] <span class="ot">=</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>rw_data[,<span class="dv">2</span>] <span class="ot">=</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#rw_data = data.frame(matrix(nrow=1000, ncol=2))</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#rw_data[,1] = cumsum(rnorm(1000,0,1))</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#rw_data[,2] = cumsum(rnorm(1000,0,1))</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>p<span class="ot">=</span><span class="dv">1</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>N<span class="ot">=</span><span class="dv">2</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#p=1</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#N=2</span></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>Y_ext <span class="ot">=</span> (rw_data[(p<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(rw_data),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]) <span class="co">#removing first p observations</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>X_ext <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">1</span>,<span class="fu">nrow</span>(Y_ext),<span class="dv">1</span>)               <span class="co">#Creating X matrix</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>p){</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  X_ext     <span class="ot">=</span> <span class="fu">cbind</span>(X_ext, (rw_data[(p<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(rw_data)<span class="sc">-</span>i,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]))</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#Y_ext = (rw_data[(p+1):nrow(rw_data),c(1,2)]) #removing first p observations</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#X_ext = matrix(1,nrow(Y_ext),1)               #Creating X matrix</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#for (i in 1:p){</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#  X_ext     = cbind(X_ext, (rw_data[(p+1):nrow(rw_data)-i,c(1,2)]))</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#}</span></span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>Y_ext <span class="ot">=</span> <span class="fu">as.matrix</span>(Y_ext)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>X_ext <span class="ot">=</span> <span class="fu">as.matrix</span>(X_ext)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#Y_ext = as.matrix(Y_ext)</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#X_ext = as.matrix(X_ext)</span></span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
@@ -657,16 +698,16 @@ exp(-\frac{1}{2} tr[\Sigma^{-1}(Y'(\lambda I_T)^{-1}Y - 2A'X'(\lambda I_T)^{-1}Y
 <span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,] -0.10 -0.20
-[2,]  0.99  0.00
-[3,]  0.00  0.99</code></pre>
+<pre><code>     [,1] [,2]
+[1,] 0.03 0.06
+[2,] 1.00 0.00
+[3,] 0.00 1.00</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2]
-[1,] 1.04 0.01
-[2,] 0.01 1.01</code></pre>
+[1,] 0.96 0.05
+[2,] 0.05 0.95</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
