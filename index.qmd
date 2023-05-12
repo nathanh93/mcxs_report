@@ -158,6 +158,14 @@ formattable::formattable(df)
 
 ```
 
+
+##### Persistence of the log realised volatilities
+
+```{R}
+FinTS::Acf(log(data[data$Symbol=='.SPX','rv5']))
+```
+
+
 ## Model
 
 The model will follow the standard $VAR(p)$ setup as follows:
