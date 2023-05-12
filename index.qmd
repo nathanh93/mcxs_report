@@ -418,7 +418,7 @@ p(\lambda|Y,X,A,\Sigma) &\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 &= \lambda^{-\frac{TN}{2}} exp(-\frac{1}{2}\frac{1}{\lambda} tr[\Sigma^{-1}(Y-XA)'(Y-XA)]) \\
 &\times \lambda^{-\frac{\underline{\nu_{\lambda}}+2}{2}} exp(-\frac{1}{2}\frac{\underline{s_{\lambda}}}{\lambda}) \det(\Sigma)^{-\frac{T}{2}}\det(I_T)^{-\frac{N}{2}} \\
 \\
-&= \lambda^{-\frac{TN+\underline{\nu_{\lambda}}+2}{2}} exp(-\frac{1}{2}\frac{1}{\lambda} tr[\Sigma^{-1}(Y-XA)'(Y-XA)] +\underline{s_{\lambda}}) \det(\Sigma)^{-\frac{T}{2}} \\
+&= \lambda^{-\frac{TN+\underline{\nu_{\lambda}}+2}{2}} exp(-\frac{1}{2}\frac{1}{\lambda} [tr[\Sigma^{-1}(Y-XA)'(Y-XA)] +\underline{s_{\lambda}}]) \det(\Sigma)^{-\frac{T}{2}} \\
 \\
 \end{align}
 ```
@@ -455,7 +455,6 @@ lambda_s.gprior = 1000
 lambda_v.gprior = 1000
 
 lambda.draw = lambda_s.gprior/rchisq(1, lambda_v.gprior)
-#lambda.draw = 1
 
 S = 1000
 
