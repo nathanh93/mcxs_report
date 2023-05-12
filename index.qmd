@@ -382,8 +382,9 @@ p(A,\Sigma|Y,X) &\propto L(A,\Sigma,\lambda|Y,X)p(A,\Sigma) \\
 &\times \det(\Sigma)^{-\frac{N+k+\underline{\nu}+1}{2}} exp(-\frac{1}{2}tr[\Sigma^{-1}(A-\underline{A})'(\underline{V})^{-1}(A-\underline{A})]) \\
 &\times exp(-\frac{1}{2}tr[\Sigma^{-1}\underline{S}]) \\
 \\
-&= \det(\Sigma)^{-\frac{T+N+K+\underline{\nu}+1}{2}} \det(\lambda I_T)^{-\frac{N}{2}}
-exp(-\frac{1}{2} tr[\Sigma^{-1}(Y'(\lambda I_T)^{-1}Y - 2A'X'(\lambda I_T)^{-1}Y + A'X'(\lambda I_T)^{-1}XA + A'\underline{V}^{-1}A -2A'\underline{V}^{-1}\underline{A} + \underline{A}'\underline{V}^{-1}\underline{A} + \underline{S})])
+&= \det(\Sigma)^{-\frac{T+N+K+\underline{\nu}+1}{2}} \det(\lambda I_T)^{-\frac{N}{2}} \\
+
+&\times exp(-\frac{1}{2} tr[\Sigma^{-1}(Y'(\lambda I_T)^{-1}Y - 2A'X'(\lambda I_T)^{-1}Y + A'X'(\lambda I_T)^{-1}XA + A'\underline{V}^{-1}A -2A'\underline{V}^{-1}\underline{A} + \underline{A}'\underline{V}^{-1}\underline{A} + \underline{S})])
 
 
 \end{align}
@@ -487,3 +488,5 @@ round(apply(Sigma.posterior.draws, 1:2, mean),2)
 round(mean(lambda.posterior.draws),2)
 
 ```
+
+As can be seen, when the extended model estimation routine is applied to the simulated bivariate random walk data, the estimates of $A$ and $\Sigma$ again match the true parameter values closely.
