@@ -343,7 +343,7 @@ round(apply(res[[2]],1:2,mean),2) #Sigma posterior mean
 
 As shown above the estimated parameter means closely match the expected values for the data generating process.
 
-### Model Extension: T-Distributed Errors
+## Model Extension: T-Distributed Errors
 
 An alternative specification for the model is to relax the assumption of normally distributed errors. A T-Distribution more closely mirrors the leptokurtosis commonly seen in financial time series and as such it is a good candidate for our model of index volatility.
 
@@ -353,7 +353,7 @@ U_t &\sim t_N(0, \Sigma, \nu)
 \end{align}
 ```
 
-As noted by ([Geweke 1993](https://onlinelibrary.wiley.com/doi/epdf/10.1002/jae.3950080504?saml_referrer)), a T-distribution for the error term can be represented by a scale mixture of normal distributions with a scaling term $\lambda$ which is Inverse Gamma 2 distributed.
+Following the methodology of [Geweke 1993](https://onlinelibrary.wiley.com/doi/epdf/10.1002/jae.3950080504?saml_referrer), a T-distribution for the error term can be represented by a scale mixture of normal distributions with a scaling term $\lambda$ which is Inverse Gamma 2 distributed.
 
 ```{=tex}
 \begin{align}
