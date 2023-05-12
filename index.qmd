@@ -362,11 +362,42 @@ U|\lambda &\sim MN(0, \Sigma, \lambda I_t) \\
 \end{align}
 ```
 
-Under this specification, the likelihood takes the following form:
+Under this specification, the kernel of the likelihood function takes the following form:
 
 ```{=tex}
+\begin{align}
+
+L(A,\Sigma,\Lambda|Y,X) &\propto \det(\Sigma)^{-\frac{T}{2}} \det(\lambda I_T)^{-\frac{N}{2}} exp(-\frac{1}{2} tr[\Sigma^{-1} (Y-XA)' (\lambda I_T)^{-1} (Y-XA) ])
+
+\end{align}
 ```
 
+The posteriors for $A$, $\Sigma$ and $\lambda$ can then be derived using the likelihood and the prior distributions. The natural conjugacy of $A$ and $\Sigma$ is preserved and so the conditional posterior $p(A,\Sigma|Y,X)$ can be derived as follows.
+
+```{=tex}
+\begin{align}
+p(A,\Sigma|Y,X) &\propto L(A,\Sigma,\lambda|Y,X)p(A,\Sigma) \\
+\\
+&= \det(\Sigma)^{-\frac{T}{2}} \det(\lambda I_T)^{-\frac{N}{2}} exp(-\frac{1}{2} tr[\Sigma^{-1} (Y-XA)' (\lambda I_T)^{-1} (Y-XA) ]) \\
+&\times \det(\Sigma)^{-\frac{N+k+\underline{\nu}+1}{2}} exp(-\frac{1}{2}tr[\Sigma^{-1}(A-\underline{A})'(\underline{V})^{-1}(A-\underline{A})]) \\
+&\times exp(-\frac{1}{2}tr[\Sigma^{-1}\underline{S}]) \\
+\\
+&= \det(\Sigma)^{-\frac{T+N+K+\underline{\nu}+1}{2}} \det(\lambda I_T)^{-\frac{N}{2}}
+exp(-\frac{1}{2} tr[\Sigma^{-1}(Y'(\lambda I_T)^{-1}Y - 2A'X'(\lambda I_T)^{-1}Y + A'X'(\lambda I_T)^{-1}XA + A'\underline{V}^{-1}A -2A'\underline{V}^{-1}\underline{A} + \underline{A}'\underline{V}^{-1}\underline{A} + \underline{S})])
+
+
+\end{align}
+```
+
+
+
+```{=tex}
+\start{align}
+
+
+
+\end{align}
+```
 
 
 
