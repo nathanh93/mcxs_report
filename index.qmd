@@ -106,7 +106,7 @@ for (i in 1:ncol(df)){
 ```
 # 
 
-As each of the series follow a similar general pattern only four of the ten indices are plotted for visualisation above. From a visual inspection of the examples above, we can see that realised volatility appears highly non-stationary. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.
+As each of the series follow a similar general pattern only four of the ten indices are plotted for visualisation above. From a visual inspection of the examples above, we can see that realised volatility appears highly variable exhibiting persistence, volatility clustering, and positive outlying observations. There are clear spikes in RV over certain periods in time. These periods of high volatility appear to persist for some time before subsiding, which provides evidence in favour of an autoregressive model specification.
 
 Furthermore, spikes in RV appear to happen around the same times across markets. This provides our main motivation for modelling RV via a VAR specification whereby we can seek to capture the dynamic interrelationships between global equity markets.
 
