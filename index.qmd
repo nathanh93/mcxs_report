@@ -358,7 +358,7 @@ As noted by ([Geweke 1993](https://onlinelibrary.wiley.com/doi/epdf/10.1002/jae.
 ```{=tex}
 \begin{align}
 U|\lambda &\sim MN(0, \Sigma, \lambda I_t) \\
-\lambda &\sim IG2( s, \nu) 
+\lambda &\sim IG2( s_{\lambda}, \nu_{\lambda}) 
 \end{align}
 ```
 
@@ -389,42 +389,61 @@ exp(-\frac{1}{2} tr[\Sigma^{-1}(Y'(\lambda I_T)^{-1}Y - 2A'X'(\lambda I_T)^{-1}Y
 \end{align}
 ```
 
-
+Expanding the terms inside the square brackets, followed by completing the squares, allows the above expression to be rearranged in the form of a Matrix-variate Normal Inverse Wishart kernel.
 
 ```{=tex}
-\start{align}
+\begin{align}
 
-
+p(A,\Sigma|Y,X) &\sim MNIW(\bar{A},\bar{V},\bar{S},\bar{\nu}) \\
+\\
+\bar{V} &= (X'(\lambda I_T)^{-1}X + \underline{V}^{-1})^{-1} \\
+\bar{A} &= \bar{V}(X'(\lambda I_T)^{-1}Y + \underline{V}^{-1}\underline{A}) \\
+\bar{S} &= Y'(\lambda I_T)^{-1}Y + \underline{A}'\underline{V}^{-1}\underline{A} + \underline{S} - \bar{A}'\bar{V}^{-1}\bar{A} \\
+\bar{\nu} &= T + \underline{\nu}
 
 \end{align}
 ```
 
+The posterior distribution for $\lambda$ is then derived as follows:
 
+```{=tex}
+\begin{align}
 
+p(\lambda|Y,X,A,\Sigma) &\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
+\\
+&= \det(\Sigma)^{-\frac{T}{2}} \det(\lambda I_T)^{-\frac{N}{2}} exp(-\frac{1}{2} tr[\Sigma^{-1} (Y-XA)' (\lambda I_T)^{-1} (Y-XA) ]) \\
+&\times \lambda^{-\frac{\underline{\nu_{\lambda}}+2}{2}} exp(-\frac{1}{2}\frac{\underline{s_{\lambda}}}{\lambda}) \\
+\\
+&= \lambda^{-\frac{TN}{2}} exp(-\frac{1}{2}\frac{1}{\lambda} tr[\Sigma^{-1}(Y-XA)'(Y-XA)]) \\
+&\times \lambda^{-\frac{\underline{\nu_{\lambda}}+2}{2}} exp(-\frac{1}{2}\frac{\underline{s_{\lambda}}}{\lambda}) \det(\Sigma)^{-\frac{T}{2}}\det(I_T)^{-\frac{N}{2}} \\
+\\
+&= \lambda^{-\frac{TN+\underline{\nu_{\lambda}}+2}{2}} exp(-\frac{1}{2}\frac{1}{\lambda} tr[\Sigma^{-1}(Y-XA)'(Y-XA)] +\underline{s_{\lambda}}) \det(\Sigma)^{-\frac{T}{2}} \\
+\\
+\end{align}
+```
 
+As such,
 
-Gibbs Sampler code for t-distributed errors:
+```{=tex}
+\begin{align}
 
+\lambda|Y,A,\Sigma &\sim IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
+\bar{s_{\lambda}} &= tr[\Sigma^{-1}(Y-XA)'(Y-XA)] + \underline{s_{\lambda}} \\
+\bar{\nu_{\lambda}} &= TN + \underline{\nu_{\lambda}}
+
+\end{align}
+```
+
+We can then sample sequentially from the conditional posterior distributions via a Gibbs Sampler. In order to do so we initalise each of the parameters at arbitrary starting values. We then proceed accordingly:
+
+1. Draw $\Sigma^{(i)}$ from the $IW(\bar{S},\bar{\nu})$ distribution
+2. Draw $A^{(i)}$ from the $MN(\bar{A},\Sigma^{(i)}, \bar{V})$ distribution
+3. Draw $\lambda^{(i)}$ from $IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}})$
+
+We repeat the above steps for the desired amount of iterations and collect the parameter draws in an array. We can then scrutinise the characteristics of the posterior densities using these draws.
+
+### Gibbs Sampler code for t-distributed errors:
 ```{r, echo=TRUE}
-
-#Bivariate random walk data
-rw_data = data.frame(matrix(nrow=1000, ncol=2))
-rw_data[,1] = cumsum(rnorm(1000,0,1))
-rw_data[,2] = cumsum(rnorm(1000,0,1))
-
-p=1
-N=2
-
-Y_ext = (rw_data[(p+1):nrow(rw_data),c(1,2)]) #removing first p observations
-X_ext = matrix(1,nrow(Y_ext),1)               #Creating X matrix
-for (i in 1:p){
-  X_ext     = cbind(X_ext, (rw_data[(p+1):nrow(rw_data)-i,c(1,2)]))
-}
-
-Y_ext = as.matrix(Y_ext)
-X_ext = as.matrix(X_ext)
-
-
 
 #Setting priors and initialising parameters
 A.gprior = matrix(0, 3, 2)
