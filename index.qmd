@@ -29,7 +29,7 @@ This paper seeks to examine the effectiveness of Bayesian VARs as a method for f
 
 ## Data
 
-The models will be applied to daily data on realised variances occurring on a group of global stock indices. Stock indices serve as gauges of overall equity market performance and are generally categorised by country. For this analysis we will focus on 10 major global indices, the SPX, DJI, FTSE, GDAXI, FCHI, STOXX50E, N225, AORD, HSI and the STI.
+The models will be applied to daily data on realised variances occurring on a group of global stock indices. Stock indices serve as gauges of overall equity market performance and are generally categorised by country. For this analysis we will focus on 10 major global indices, the SPX, DJI, FTSE, GDAXI, FCHI, STOXX50E, N225, AORD, HSI and the KS11.
 
 | Code     | Index Name    | Region   |
 |----------|---------------|----------|
@@ -42,7 +42,7 @@ The models will be applied to daily data on realised variances occurring on a gr
 | N225     | NIKKEI 225    | Japan    |
 | AORD     | All Ordinaries| Australia|
 | HSI      | Hang Seng     | Hong Kong|
-| STI      | Straits Times | Singapore|
+| KS11     | KOSPI         | Korea    | 
 
 Realised variance is a measure of historical volatility occuring in financial time series constructed from intraday high frequency return data.
 
@@ -147,8 +147,8 @@ Conducting Augmented Dickey-Fuller tests on the log transformed RVs to test for 
 df = as.data.frame(matrix(nrow=0, ncol=2))
 colnames(df) = c('Index','P Value')
 
-for (i in c('.SPX', '.DJI', '.FTSE', '.GDAXI','.FCHI','.STOXX50E','.N225','.AORD','.HSI','.STI')){
-  testres = tseries::adf.test(log(data[data$Symbol=='.SPX','rv5']))
+for (i in c('.SPX', '.DJI', '.FTSE', '.GDAXI','.FCHI','.STOXX50E','.N225','.AORD','.HSI','.KS11')){
+  testres = tseries::adf.test(log(data[data$Symbol==i,'rv5']))
   p = testres$p.value
   new = c(i, p)
   df[nrow(df)+1, ] = new
@@ -248,9 +248,11 @@ p(\Sigma|Y,X) &= IW_N(\bar{S},\bar{\nu}) \\
 
 Since the above fully characterises the joint posterior distribution we can then sample from these directly using a suitably chosen prior. A common prior for unit root nonstationary variables is the 'Minnesota Prior', which assumes that the variables follow a random walk. The prior mean $\underline{A}$ is set to an identity matrix for the first lag and zeroes elsewhere. Meanwhile the column specific covariance matrix for A is set according to two shrinkage hyperparameters $\kappa_1$ and $\kappa_2$ which determine the level of shrinkage around the prior mean.
 
+As the ADF tests for the log transformed RVs suggest that they are stationary, I instead work with an alternate form of the 'Minnesota Prior' whereby the variables are characterised as  'white noise'. To achieve this, the $\underline{A}$ matrix is set to a $K \times N$ matrix of zeroes.
+
 ```{=tex}
 \begin{align}
-\underline{A} &= \begin{bmatrix} 0_{N \times 1} &  I_N  & 0_{N \times (p-1)N} \end{bmatrix} \\
+\underline{A} &= 0_{K \times N} \\
 
 \underline{V} &= diag( \begin{bmatrix} \kappa_2 & \kappa_1(p^{-2}\otimes I_N') \end{bmatrix})
 
