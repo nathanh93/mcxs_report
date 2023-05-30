@@ -216,7 +216,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data">Data</h2>
-<p>The models will be applied to daily data on realised variances occurring on a group of global stock indices. Stock indices serve as gauges of overall equity market performance and are generally categorised by country. For this analysis we will focus on 10 major global indices, the SPX, DJI, FTSE, GDAXI, FCHI, STOXX50E, N225, AORD, HSI and the STI.</p>
+<p>The models will be applied to daily data on realised variances occurring on a group of global stock indices. Stock indices serve as gauges of overall equity market performance and are generally categorised by country. For this analysis we will focus on 10 major global indices, the SPX, DJI, FTSE, GDAXI, FCHI, STOXX50E, N225, AORD, HSI and the KS11.</p>
 <table class="table">
 <thead>
 <tr class="header">
@@ -272,9 +272,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td>Hong Kong</td>
 </tr>
 <tr class="even">
-<td>STI</td>
-<td>Straits Times</td>
-<td>Singapore</td>
+<td>KS11</td>
+<td>KOSPI</td>
+<td>Korea</td>
 </tr>
 </tbody>
 </table>
@@ -410,7 +410,7 @@ P Value
 </tr>
 <tr>
 <td style="text-align:right;">
-.STI
+.KS11
 </td>
 <td style="text-align:right;">
 0.01
@@ -478,8 +478,9 @@ p(\Sigma|Y,X) &amp;= IW_N(\bar{S},\bar{\nu}) \\
 
 \end{align}\]</span>
 <p>Since the above fully characterises the joint posterior distribution we can then sample from these directly using a suitably chosen prior. A common prior for unit root nonstationary variables is the ‘Minnesota Prior’, which assumes that the variables follow a random walk. The prior mean <span class="math inline">\(\underline{A}\)</span> is set to an identity matrix for the first lag and zeroes elsewhere. Meanwhile the column specific covariance matrix for A is set according to two shrinkage hyperparameters <span class="math inline">\(\kappa_1\)</span> and <span class="math inline">\(\kappa_2\)</span> which determine the level of shrinkage around the prior mean.</p>
+<p>As the ADF tests for the log transformed RVs suggest that they are stationary, I instead work with an alternate form of the ‘Minnesota Prior’ whereby the variables are characterised as ‘white noise’. To achieve this, the <span class="math inline">\(\underline{A}\)</span> matrix is set to a <span class="math inline">\(K \times N\)</span> matrix of zeroes.</p>
 <span class="math display">\[\begin{align}
-\underline{A} &amp;= \begin{bmatrix} 0_{N \times 1} &amp;  I_N  &amp; 0_{N \times (p-1)N} \end{bmatrix} \\
+\underline{A} &amp;= 0_{K \times N} \\
 
 \underline{V} &amp;= diag( \begin{bmatrix} \kappa_2 &amp; \kappa_1(p^{-2}\otimes I_N') \end{bmatrix})
 
@@ -557,16 +558,16 @@ p(\Sigma|Y,X) &amp;= IW_N(\bar{S},\bar{\nu}) \\
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 0.08 0.05
-[2,] 1.00 0.00
-[3,] 0.00 1.00</code></pre>
+<pre><code>      [,1]  [,2]
+[1,] -0.07 -0.19
+[2,]  1.00  0.00
+[3,]  0.00  0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2]
-[1,] 1.00 0.03
-[2,] 0.03 1.04</code></pre>
+[1,] 0.89 0.02
+[2,] 0.02 0.99</code></pre>
 </div>
 </div>
 <p>As shown above the estimated parameter means closely match the expected values for the data generating process.</p>
@@ -684,20 +685,20 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 0.07 0.05
-[2,] 1.00 0.00
-[3,] 0.00 1.00</code></pre>
+<pre><code>      [,1]  [,2]
+[1,] -0.07 -0.19
+[2,]  1.00  0.00
+[3,]  0.00  0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2]
-[1,] 1.00 0.03
-[2,] 0.03 1.03</code></pre>
+[1,] 0.89 0.02
+[2,] 0.02 0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.01</code></pre>
+<pre><code>[1] 1</code></pre>
 </div>
 </div>
 <p>As can be seen, when the extended model estimation routine is applied to the simulated bivariate random walk data, the estimates of <span class="math inline">\(A\)</span> and <span class="math inline">\(\Sigma\)</span> again match the true parameter values closely.</p>
