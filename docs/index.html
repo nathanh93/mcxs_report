@@ -565,16 +565,16 @@ p(\Sigma|Y,X) &amp;= IW_N(\bar{S},\bar{\nu}) \\
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 0.17 0.12
-[2,] 0.99 0.01
-[3,] 0.00 0.99</code></pre>
+<pre><code>      [,1]  [,2]
+[1,] -0.23 -0.08
+[2,]  0.98  0.00
+[3,]  0.00  0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2]
-[1,] 0.98 0.03
-[2,] 0.03 1.06</code></pre>
+[1,] 0.96 0.00
+[2,] 0.00 1.01</code></pre>
 </div>
 </div>
 <p>As shown above the estimated parameter means closely match the expected values for the data generating process.</p>
@@ -692,20 +692,20 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 0.17 0.11
-[2,] 0.99 0.01
-[3,] 0.00 0.99</code></pre>
+<pre><code>      [,1]  [,2]
+[1,] -0.25 -0.07
+[2,]  0.98  0.00
+[3,]  0.01  0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2]
-[1,] 0.97 0.03
-[2,] 0.03 1.05</code></pre>
+[1,] 0.96 0.00
+[2,] 0.00 1.01</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.02</code></pre>
+<pre><code>[1] 1.01</code></pre>
 </div>
 </div>
 <p>As can be seen, when the extended model estimation routine is applied to the simulated bivariate random walk data, the estimates of <span class="math inline">\(A\)</span> and <span class="math inline">\(\Sigma\)</span> again match the true parameter values closely.</p>
@@ -738,21 +738,21 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>)) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7] [,8]  [,9] [,10]
-[1,] -3.18 -0.11 -0.94 -0.77 -0.67 -2.54 -2.01 0.24 -1.64 -1.14
+[1,] -3.19 -0.09 -0.93 -0.76 -0.66 -2.51 -1.99 0.24 -1.63 -1.14
 [2,]  0.21  0.04  0.04  0.08 -0.02  0.02  0.00 0.04 -0.04  0.02
 [3,]  0.08  0.14  0.05  0.07  0.06  0.04  0.05 0.13  0.05  0.07
-[4,]  0.05  0.05  0.12  0.09  0.10  0.01  0.02 0.06  0.01  0.11
-[5,]  0.10  0.04  0.06  0.11  0.03  0.04  0.02 0.04  0.01  0.04
+[4,]  0.05  0.05  0.12  0.09  0.10  0.01  0.03 0.06  0.01  0.12
+[5,]  0.10  0.04  0.06  0.10  0.03  0.04  0.02 0.04  0.01  0.04
 [6,] -0.02  0.06  0.10  0.05  0.17  0.02  0.04 0.05  0.05  0.12</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>)) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]  [,9] [,10]
-[1,] 0.83 0.07 0.08 0.15 0.04 0.06 0.07 0.08 -0.01  0.09
-[2,] 0.07 0.82 0.17 0.19 0.18 0.08 0.08 0.42  0.09  0.19
+[1,] 0.83 0.07 0.08 0.15 0.04 0.06 0.08 0.08 -0.01  0.09
+[2,] 0.07 0.83 0.17 0.19 0.18 0.08 0.09 0.42  0.09  0.19
 [3,] 0.08 0.17 0.51 0.19 0.24 0.05 0.06 0.18  0.05  0.26
 [4,] 0.15 0.19 0.19 0.65 0.18 0.07 0.07 0.19  0.05  0.24
-[5,] 0.04 0.18 0.24 0.18 0.57 0.05 0.07 0.18  0.07  0.27
+[5,] 0.04 0.18 0.24 0.18 0.58 0.05 0.08 0.18  0.07  0.28
 [6,] 0.06 0.08 0.05 0.07 0.05 0.55 0.09 0.08  0.11  0.04</code></pre>
 </div>
 </div>
@@ -770,7 +770,7 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>lambda.draw <span class="ot">=</span> lambda_s.gprior<span class="sc">/</span><span class="fu">rchisq</span>(<span class="dv">1</span>, lambda_v.gprior)</span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>S <span class="ot">=</span> <span class="dv">300</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>S <span class="ot">=</span> <span class="dv">300</span> <span class="co"># A limited number of draws are chosen for speed of estimation. This will be increased in the final submission.</span></span>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>Sigma.posterior.draws <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="fu">c</span>(N,N,S))</span>
 <span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>A.posterior.draws <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="fu">c</span>((<span class="dv">1</span><span class="sc">+</span>p<span class="sc">*</span>N),N,S))</span>
@@ -800,26 +800,26 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]  [,9] [,10]
-[1,] -4.63 -1.28 -2.01 -2.01 -1.65 -3.97 -3.33 -0.97 -2.98 -2.05
-[2,]  0.12  0.04  0.04  0.06  0.01  0.02  0.01  0.04 -0.02  0.03
+[1,] -4.58 -1.28 -1.98 -1.99 -1.64 -3.95 -3.32 -0.96 -2.95 -2.04
+[2,]  0.12  0.04  0.04  0.06  0.01  0.02  0.01  0.04 -0.01  0.03
 [3,]  0.06  0.10  0.06  0.07  0.06  0.04  0.05  0.10  0.05  0.06
 [4,]  0.04  0.06  0.08  0.07  0.08  0.02  0.03  0.06  0.02  0.08
-[5,]  0.07  0.05  0.06  0.07  0.05  0.03  0.03  0.06  0.02  0.05
-[6,]  0.01  0.06  0.08  0.05  0.10  0.02  0.04  0.06  0.04  0.08</code></pre>
+[5,]  0.07  0.06  0.06  0.07  0.05  0.03  0.03  0.06  0.02  0.05
+[6,]  0.01  0.06  0.08  0.05  0.10  0.03  0.04  0.06  0.04  0.08</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-[1,] 0.49 0.03 0.04 0.06 0.02 0.02 0.03 0.04 0.00  0.04
-[2,] 0.03 0.52 0.07 0.07 0.07 0.04 0.04 0.14 0.05  0.07
+[1,] 0.50 0.04 0.04 0.06 0.02 0.03 0.03 0.04 0.00  0.04
+[2,] 0.04 0.52 0.07 0.07 0.07 0.04 0.04 0.14 0.05  0.07
 [3,] 0.04 0.07 0.32 0.07 0.09 0.02 0.03 0.07 0.02  0.09
-[4,] 0.06 0.07 0.07 0.40 0.07 0.03 0.03 0.07 0.02  0.08
-[5,] 0.02 0.07 0.09 0.07 0.35 0.03 0.04 0.07 0.04  0.09
-[6,] 0.02 0.04 0.02 0.03 0.03 0.33 0.04 0.04 0.05  0.02</code></pre>
+[4,] 0.06 0.07 0.07 0.40 0.07 0.03 0.03 0.07 0.03  0.08
+[5,] 0.02 0.07 0.09 0.07 0.36 0.03 0.04 0.07 0.04  0.10
+[6,] 0.03 0.04 0.02 0.03 0.03 0.33 0.04 0.04 0.05  0.02</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.99</code></pre>
+<pre><code>[1] 3.96</code></pre>
 </div>
 </div>
 <p>We can then compute forecasts for both models by sampling from the predictive densities. For each draw of <span class="math inline">\(A\)</span> and <span class="math inline">\(\Sigma\)</span>, we sample h times from the predictive density in order to compute a forecast horizon of h periods. Each of the h draws are computed as 1 period ahead forecasts. Where the predictive density requires data which has not yet been observed this is replaced by the preceeding forecasts computed within the same iteration.</p>
@@ -829,118 +829,112 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(HDInterval)</span>
 <span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mvtnorm)</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plot3D)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'plot3D' was built under R version 4.0.5</code></pre>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plot3D)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>get_predictions <span class="ot">=</span> <span class="cf">function</span>(S, h, A.posterior, Sigma.posterior){</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  Y.h         <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>,<span class="fu">c</span>(h,N,S))</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(S<span class="sc">/</span><span class="dv">1</span>)){</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    x.Ti        <span class="ot">=</span> Y_ext[(<span class="fu">nrow</span>(Y_ext)<span class="sc">-</span>p<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(Y_ext),]</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (p<span class="sc">&gt;</span><span class="dv">1</span>){</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>      x.Ti        <span class="ot">=</span> x.Ti[<span class="dv">1</span><span class="sc">:</span>p,] </span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>h){</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>      x.T         <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="fu">as.vector</span>(<span class="fu">t</span>(x.Ti)))</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>      Y.h[i,,s]   <span class="ot">=</span> <span class="fu">rmvnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> x.T<span class="sc">%*%</span>A.posterior[,,s], <span class="at">sigma=</span>Sigma.posterior[,,s])</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (p<span class="sc">==</span><span class="dv">1</span>){</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>        x.Ti        <span class="ot">=</span> Y.h[i,,s]</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>        x.Ti        <span class="ot">=</span> <span class="fu">rbind</span>(Y.h[i,,s],x.Ti[<span class="dv">1</span><span class="sc">:</span>(p<span class="dv">-1</span>),])</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">1</span>,],<span class="dv">1</span>,mean)</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">1</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">2</span>,],<span class="dv">1</span>,mean)</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">2</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.3</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">3</span>,],<span class="dv">1</span>,mean)</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.3</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">3</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.4</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">4</span>,],<span class="dv">1</span>,mean)</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.4</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">4</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.5</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">5</span>,],<span class="dv">1</span>,mean)</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.5</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">5</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.6</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">6</span>,],<span class="dv">1</span>,mean)</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.6</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">6</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.7</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">7</span>,],<span class="dv">1</span>,mean)</span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.7</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">7</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.8</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">8</span>,],<span class="dv">1</span>,mean)</span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.8</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">8</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-51"><a href="#cb22-51" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.9</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">9</span>,],<span class="dv">1</span>,mean)</span>
+<span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.9</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">9</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
+<span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-54"><a href="#cb22-54" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.10</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">10</span>,],<span class="dv">1</span>,mean)</span>
+<span id="cb22-55"><a href="#cb22-55" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.10</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">10</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
+<span id="cb22-56"><a href="#cb22-56" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-57"><a href="#cb22-57" aria-hidden="true" tabindex="-1"></a>  point.forecasts <span class="ot">=</span> <span class="fu">list</span>(point.f<span class="fl">.1</span>, point.f<span class="fl">.2</span>, point.f<span class="fl">.3</span>, point.f<span class="fl">.4</span>, point.f<span class="fl">.5</span>, point.f<span class="fl">.6</span>, point.f<span class="fl">.7</span>, point.f<span class="fl">.8</span>, point.f<span class="fl">.9</span>, point.f<span class="fl">.10</span>)</span>
+<span id="cb22-58"><a href="#cb22-58" aria-hidden="true" tabindex="-1"></a>  interval.forecasts <span class="ot">=</span> <span class="fu">list</span>(point.interval<span class="fl">.1</span>, point.interval<span class="fl">.2</span>, point.interval<span class="fl">.3</span>, point.interval<span class="fl">.4</span>, point.interval<span class="fl">.5</span>, point.interval<span class="fl">.6</span>, point.interval<span class="fl">.7</span>, point.interval<span class="fl">.8</span>, point.interval<span class="fl">.9</span>, point.interval<span class="fl">.10</span>)</span>
+<span id="cb22-59"><a href="#cb22-59" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb22-60"><a href="#cb22-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(point.forecasts, interval.forecasts))</span>
+<span id="cb22-61"><a href="#cb22-61" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-62"><a href="#cb22-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-63"><a href="#cb22-63" aria-hidden="true" tabindex="-1"></a>preds_ext <span class="ot">=</span> <span class="fu">get_predictions</span>(<span class="dv">300</span>, <span class="dv">20</span>, A.posterior.draws, Sigma.posterior.draws)</span>
+<span id="cb22-64"><a href="#cb22-64" aria-hidden="true" tabindex="-1"></a>preds_base <span class="ot">=</span> <span class="fu">get_predictions</span>(<span class="dv">300</span>, <span class="dv">20</span>, res[[<span class="dv">1</span>]], res[[<span class="dv">2</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>get_predictions <span class="ot">=</span> <span class="cf">function</span>(S, h, A.posterior, Sigma.posterior){</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  Y.h         <span class="ot">=</span> <span class="fu">array</span>(<span class="cn">NA</span>,<span class="fu">c</span>(h,N,S))</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(S<span class="sc">/</span><span class="dv">1</span>)){</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    x.Ti        <span class="ot">=</span> Y_ext[(<span class="fu">nrow</span>(Y_ext)<span class="sc">-</span>p<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">nrow</span>(Y_ext),]</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (p<span class="sc">&gt;</span><span class="dv">1</span>){</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>      x.Ti        <span class="ot">=</span> x.Ti[<span class="dv">1</span><span class="sc">:</span>p,] </span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>h){</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>      x.T         <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="fu">as.vector</span>(<span class="fu">t</span>(x.Ti)))</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>      Y.h[i,,s]   <span class="ot">=</span> <span class="fu">rmvnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> x.T<span class="sc">%*%</span>A.posterior[,,s], <span class="at">sigma=</span>Sigma.posterior[,,s])</span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (p<span class="sc">==</span><span class="dv">1</span>){</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>        x.Ti        <span class="ot">=</span> Y.h[i,,s]</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>        x.Ti        <span class="ot">=</span> <span class="fu">rbind</span>(Y.h[i,,s],x.Ti[<span class="dv">1</span><span class="sc">:</span>(p<span class="dv">-1</span>),])</span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">1</span>,],<span class="dv">1</span>,mean)</span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">1</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">2</span>,],<span class="dv">1</span>,mean)</span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">2</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.3</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">3</span>,],<span class="dv">1</span>,mean)</span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.3</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">3</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.4</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">4</span>,],<span class="dv">1</span>,mean)</span>
-<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.4</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">4</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
-<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.5</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">5</span>,],<span class="dv">1</span>,mean)</span>
-<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.5</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">5</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
-<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.6</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">6</span>,],<span class="dv">1</span>,mean)</span>
-<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.6</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">6</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
-<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.7</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">7</span>,],<span class="dv">1</span>,mean)</span>
-<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.7</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">7</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
-<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.8</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">8</span>,],<span class="dv">1</span>,mean)</span>
-<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.8</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">8</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
-<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.9</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">9</span>,],<span class="dv">1</span>,mean)</span>
-<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.9</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">9</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
-<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a>  point.f<span class="fl">.10</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">10</span>,],<span class="dv">1</span>,mean)</span>
-<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>  point.interval<span class="fl">.10</span> <span class="ot">=</span> <span class="fu">apply</span>(Y.h[,<span class="dv">10</span>,],<span class="dv">1</span>,hdi,<span class="at">credMass=</span><span class="fl">0.90</span>)</span>
-<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a>  point.forecasts <span class="ot">=</span> <span class="fu">list</span>(point.f<span class="fl">.1</span>, point.f<span class="fl">.2</span>, point.f<span class="fl">.3</span>, point.f<span class="fl">.4</span>, point.f<span class="fl">.5</span>, point.f<span class="fl">.6</span>, point.f<span class="fl">.7</span>, point.f<span class="fl">.8</span>, point.f<span class="fl">.9</span>, point.f<span class="fl">.10</span>)</span>
-<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>  interval.forecasts <span class="ot">=</span> <span class="fu">list</span>(point.interval<span class="fl">.1</span>, point.interval<span class="fl">.2</span>, point.interval<span class="fl">.3</span>, point.interval<span class="fl">.4</span>, point.interval<span class="fl">.5</span>, point.interval<span class="fl">.6</span>, point.interval<span class="fl">.7</span>, point.interval<span class="fl">.8</span>, point.interval<span class="fl">.9</span>, point.interval<span class="fl">.10</span>)</span>
-<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(point.forecasts, interval.forecasts))</span>
-<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-56"><a href="#cb24-56" aria-hidden="true" tabindex="-1"></a>preds_ext <span class="ot">=</span> <span class="fu">get_predictions</span>(<span class="dv">300</span>, <span class="dv">20</span>, A.posterior.draws, Sigma.posterior.draws)</span>
-<span id="cb24-57"><a href="#cb24-57" aria-hidden="true" tabindex="-1"></a>preds_base <span class="ot">=</span> <span class="fu">get_predictions</span>(<span class="dv">300</span>, <span class="dv">20</span>, res[[<span class="dv">1</span>]], res[[<span class="dv">2</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>The respective out of sample forecasts for 20 days ahead are as follows. The forecasts from the baseline model are plotted in blue and the T-distributed error model forecasts are plotted in red. 90% confidence intervals are denoted by the shaded regions.</p>
+<p>The respective out of sample forecasts for 20 days ahead are plotted below. The forecasts from the baseline model are plotted in blue and the T-distributed error model forecasts are plotted in red. 90% confidence intervals are denoted by the shaded regions.</p>
 </section>
 <section id="day-log-rv-forecast-plots" class="level3">
 <h3 class="anchored" data-anchor-id="day-log-rv-forecast-plots">20 Day log RV Forecast Plots</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting function</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>plot_pred <span class="ot">=</span> <span class="cf">function</span>(ix, preds, preds2){</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  h<span class="ot">=</span><span class="fu">length</span>(preds[[<span class="dv">1</span>]][[<span class="dv">1</span>]])</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  xdates <span class="ot">=</span> <span class="fu">c</span>(y<span class="sc">$</span>Date, <span class="fu">seq</span>(y[<span class="fu">length</span>(y[,<span class="dv">1</span>]),<span class="st">'Date'</span>], <span class="at">by=</span><span class="st">'day'</span>, <span class="at">length.out=</span>h<span class="sc">-</span>p))</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  index_name <span class="ot">=</span> <span class="fu">colnames</span>(Y_ext)[ix]</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), (<span class="fu">c</span>(Y_ext[,ix], preds[[<span class="dv">1</span>]][[ix]])), <span class="at">type=</span><span class="st">'l'</span>, <span class="at">col=</span><span class="st">'blue'</span>, <span class="at">ylab=</span><span class="st">''</span>, <span class="at">xlab=</span><span class="st">''</span>, <span class="at">main=</span><span class="fu">paste</span>(index_name,<span class="st">'log RV Forecasts'</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">4300</span>,<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), <span class="at">xaxt=</span><span class="st">'n'</span>, <span class="at">cex.axis=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">1</span>)</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">polygon</span>(<span class="fu">c</span>((<span class="fu">length</span>(Y_ext[,ix]))<span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), (<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h)<span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix]))), (<span class="fu">c</span>(Y_ext[<span class="fu">length</span>(Y_ext[,ix]),ix], preds[[<span class="dv">2</span>]][[ix]][<span class="st">'lower'</span>,], preds[[<span class="dv">2</span>]][[ix]][<span class="st">'upper'</span>,h<span class="sc">:</span><span class="dv">1</span>], Y_ext[<span class="fu">length</span>(Y_ext[,ix]),ix])), <span class="at">col=</span><span class="fu">rgb</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>,<span class="fl">0.1</span>), <span class="at">border=</span><span class="cn">NA</span>)</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>((<span class="fu">c</span>(Y_ext[,ix], preds2[[<span class="dv">1</span>]][[ix]])), <span class="at">type=</span><span class="st">'l'</span>, <span class="at">col=</span><span class="st">'red'</span>, <span class="at">ylab=</span><span class="st">''</span>, <span class="at">xlab=</span><span class="st">''</span>, <span class="at">main=</span><span class="fu">paste</span>(index_name,<span class="st">'log RV Forecasts'</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">4300</span>,<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), <span class="at">xaxt=</span><span class="st">'n'</span>, <span class="at">cex.axis=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">1</span>)</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(Y_ext[,ix], <span class="at">type=</span><span class="st">'l'</span>, <span class="at">col=</span><span class="st">'blue'</span>)</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">polygon</span>(<span class="fu">c</span>((<span class="fu">length</span>(Y_ext[,ix]))<span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), (<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h)<span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix]))), (<span class="fu">c</span>(Y_ext[<span class="fu">length</span>(Y_ext[,ix]),ix], preds2[[<span class="dv">2</span>]][[ix]][<span class="st">'lower'</span>,], preds2[[<span class="dv">2</span>]][[ix]][<span class="st">'upper'</span>,h<span class="sc">:</span><span class="dv">1</span>], Y_ext[<span class="fu">length</span>(Y_ext[,ix]),ix])), <span class="at">col=</span><span class="fu">rgb</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>,<span class="fl">0.1</span>), <span class="at">border=</span><span class="cn">NA</span>)</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at=</span><span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), <span class="at">labels=</span>xdates, <span class="at">tick=</span><span class="cn">FALSE</span>, <span class="at">cex.axis=</span><span class="dv">1</span>)</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>), <span class="at">mar=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">1</span>, preds_base, preds_ext)</span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">2</span>, preds_base, preds_ext)</span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">3</span>, preds_base, preds_ext)</span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">4</span>, preds_base, preds_ext)</span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">5</span>, preds_base, preds_ext)</span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">6</span>, preds_base, preds_ext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting function</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>plot_pred <span class="ot">=</span> <span class="cf">function</span>(ix, preds, preds2){</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  h<span class="ot">=</span><span class="fu">length</span>(preds[[<span class="dv">1</span>]][[<span class="dv">1</span>]])</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  xdates <span class="ot">=</span> <span class="fu">c</span>(y<span class="sc">$</span>Date, <span class="fu">seq</span>(y[<span class="fu">length</span>(y[,<span class="dv">1</span>]),<span class="st">'Date'</span>], <span class="at">by=</span><span class="st">'day'</span>, <span class="at">length.out=</span>h<span class="sc">-</span>p))</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  index_name <span class="ot">=</span> <span class="fu">colnames</span>(Y_ext)[ix]</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), (<span class="fu">c</span>(Y_ext[,ix], preds[[<span class="dv">1</span>]][[ix]])), <span class="at">type=</span><span class="st">'l'</span>, <span class="at">col=</span><span class="st">'blue'</span>, <span class="at">ylab=</span><span class="st">''</span>, <span class="at">xlab=</span><span class="st">''</span>, <span class="at">main=</span><span class="fu">paste</span>(index_name,<span class="st">'log RV Forecasts'</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">4300</span>,<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), <span class="at">xaxt=</span><span class="st">'n'</span>, <span class="at">cex.axis=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">1</span>)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">polygon</span>(<span class="fu">c</span>((<span class="fu">length</span>(Y_ext[,ix]))<span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), (<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h)<span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix]))), (<span class="fu">c</span>(Y_ext[<span class="fu">length</span>(Y_ext[,ix]),ix], preds[[<span class="dv">2</span>]][[ix]][<span class="st">'lower'</span>,], preds[[<span class="dv">2</span>]][[ix]][<span class="st">'upper'</span>,h<span class="sc">:</span><span class="dv">1</span>], Y_ext[<span class="fu">length</span>(Y_ext[,ix]),ix])), <span class="at">col=</span><span class="fu">rgb</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>,<span class="fl">0.1</span>), <span class="at">border=</span><span class="cn">NA</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>((<span class="fu">c</span>(Y_ext[,ix], preds2[[<span class="dv">1</span>]][[ix]])), <span class="at">type=</span><span class="st">'l'</span>, <span class="at">col=</span><span class="st">'red'</span>, <span class="at">ylab=</span><span class="st">''</span>, <span class="at">xlab=</span><span class="st">''</span>, <span class="at">main=</span><span class="fu">paste</span>(index_name,<span class="st">'log RV Forecasts'</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">4300</span>,<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), <span class="at">xaxt=</span><span class="st">'n'</span>, <span class="at">cex.axis=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">1</span>)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(Y_ext[,ix], <span class="at">type=</span><span class="st">'l'</span>, <span class="at">col=</span><span class="st">'blue'</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">polygon</span>(<span class="fu">c</span>((<span class="fu">length</span>(Y_ext[,ix]))<span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), (<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h)<span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix]))), (<span class="fu">c</span>(Y_ext[<span class="fu">length</span>(Y_ext[,ix]),ix], preds2[[<span class="dv">2</span>]][[ix]][<span class="st">'lower'</span>,], preds2[[<span class="dv">2</span>]][[ix]][<span class="st">'upper'</span>,h<span class="sc">:</span><span class="dv">1</span>], Y_ext[<span class="fu">length</span>(Y_ext[,ix]),ix])), <span class="at">col=</span><span class="fu">rgb</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>,<span class="fl">0.1</span>), <span class="at">border=</span><span class="cn">NA</span>)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at=</span><span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), <span class="at">labels=</span>xdates, <span class="at">tick=</span><span class="cn">FALSE</span>, <span class="at">cex.axis=</span><span class="dv">1</span>)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">7</span>, preds_base, preds_ext)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">8</span>, preds_base, preds_ext)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">9</span>, preds_base, preds_ext)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">10</span>, preds_base, preds_ext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<p>As can be seen by the point forecasts, both model forecasts appear to converge back to a long term average. The forecasts trend higher over the forecast period for all variables, which might be explained as the model predicting volatility will normalise at a higher long run level after a period of relatively low volatility leading up to the forecast period. Forecasts in the T-distribution model appear to move back to the long run mean more quickly than that of the baseline model, suggesting faster mean reversion.</p>
-<p>Comparing the confidence intervals of the two models, we can see that the T-distribution model has tighter 90% CIs for all forecasts. This may suggest that our assumption of T-distributed errors is appropriate. If the data has fatter tails than would be captured by a Normal distribution this may have been leading to larger variances estimated by the baseline model. The extended model allows for outliers in the data and therefore estimates the variance more accurately, leading to tighter intervals.</p>
-<p>We can transform the variables and forecast back into daily RVs by taking the exponent of the variables. The RV forecasts can then be visualised as follows:</p>
-</section>
-<section id="day-rv-forecasts" class="level3">
-<h3 class="anchored" data-anchor-id="day-rv-forecasts">20 day RV Forecasts</h3>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-12-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>As can be seen by the point forecasts, both model forecasts appear to converge back to a long term average. The forecasts trend higher over the forecast period for all variables, which might be explained as the model predicting volatility will normalise at a higher long run level after a period of relatively low volatility leading up to the forecast period. Forecasts in the T-distribution model appear to move back to the long run mean more quickly than that of the baseline model, suggesting faster mean reversion.</p>
+<p>Comparing the confidence intervals of the two models, we can see that the T-distribution model has tighter 90% CIs for all forecasts. This may suggest that our assumption of T-distributed errors is appropriate. If the data has fatter tails than would be captured by a Normal distribution this may have been leading to larger variances estimated by the baseline model. The extended model allows for outliers in the data and therefore estimates the variance more accurately, leading to tighter intervals.</p>
+<p>We can transform the variables and forecasts back into daily RVs by taking the exponent of the variables. Visually the forecasts seem reasonable given the historical data, with the forecasts again reverting towards the long term average. The confidence intervals also look sensible given the transformation back to levels, with the width of the band increasing as the forecasted RV increases as we would expect from the transformation. Again the T-Distribution model exhibits tighter CIs.</p>
+</section>
+<section id="day-rv-forecasts" class="level3">
+<h3 class="anchored" data-anchor-id="day-rv-forecasts">20 day RV Forecasts</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-13-3.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 
