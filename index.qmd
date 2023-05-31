@@ -72,10 +72,8 @@ The RV data is sourced from the [Oxford Man Realised Library](https://oxford-man
 
 #Sourcing RV data from the Oxford Man Realized Library
 
-temp <- tempfile()
-download.file("https://github.com/onnokleen/mfGARCH/raw/v0.1.9/data-raw/OxfordManRealizedVolatilityIndices.zip",temp)
-data <- read.csv(unz(temp, "oxfordmanrealizedvolatilityindices.csv"))
-unlink(temp)
+data = read.csv('https://github.com/nathanh93/mcxs_report/raw/master/data/oxfordmanrealizedvolatilityindices.csv')
+
 
 #Putting the RV data in a dataframe
 
