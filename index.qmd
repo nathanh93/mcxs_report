@@ -489,3 +489,246 @@ round(mean(lambda.posterior.draws),2)
 ```
 
 As can be seen, when the extended model estimation routine is applied to the simulated bivariate random walk data, the estimates of $A$ and $\Sigma$ again match the true parameter values closely.
+
+
+# Empirical Results
+
+The estimation procedures outlined above can be readily applied to the log RV data using the previously stated 'Minnesota Prior'. For the purposes of this estimation I apply a lag of 5 to capture 1 week of trading. The estimated parameter matrices for $A$ and $\Sigma$ for both the baseline and extended models are as follows:
+
+```{r, echo=FALSE}
+#Arranging the data into Y and X Matrices
+
+data_sample = data[data$Symbol %in% c('.SPX','.DJI','.FTSE','.GDAXI','.FCHI', '.STOXX50E', '.N225', '.AORD', '.HSI', '.KS11'),]
+data_sample['Date'] = as.Date(data_sample$X)
+
+y = reshape(data_sample[,c('Date','Symbol','rv5')], idvar='Date', timevar='Symbol',direction='wide' )
+colnames(y) = c('Date','.AORD','.DJI','.FCHI','.FTSE','.GDAXI','.HSI','.KS11','.N225','.SPX','.STOXX50E')
+y = y[order(y$Date),]
+y = na.omit(y)
+
+
+p=5
+N=10
+
+Y_ext = log(y[(p+1):nrow(y),c('.AORD','.DJI','.FCHI','.FTSE','.GDAXI','.HSI','.N225','.SPX','.KS11','.STOXX50E')])
+X_ext = matrix(1,nrow(Y_ext),1)
+for (i in 1:p){
+X_ext     = cbind(X_ext, log(y[(p+1):nrow(y)-i,c('.AORD','.DJI','.FCHI','.FTSE','.GDAXI','.HSI','.N225','.SPX','.KS11','.STOXX50E')]))
+}
+
+Y_ext = as.matrix(Y_ext)
+X_ext = as.matrix(X_ext)
+
+```
+
+### Baseline Model Estimation
+```{r, echo=TRUE}
+
+A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
+Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/T
+
+kappa.1     = 0.02^2
+kappa.2     = 100
+A.pri       = matrix(0, (1+p*N), N)
+V.pri       = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+S.pri       = diag(diag(Sigma.hat))
+nu.pri      = N+1
+
+pris = list(A.pri, V.pri, S.pri, nu.pri)
+
+res = get_posteriors(300, Y_ext, X_ext, pris)
+
+round(apply(res[[1]],1:2,mean),2) #A posterior mean
+round(apply(res[[2]],1:2,mean),2) #Sigma posterior mean
+
+```
+
+
+### Gibbs Sampler Estimation of Extended Model
+```{r, echo=TRUE}
+
+#Setting priors and initialising parameters
+A.gprior = matrix(0, (1+p*N), N)
+A_V.gprior = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+Sigma_s.gprior = diag(diag(Sigma.hat))
+Sigma_v.gprior = N+1
+lambda_s.gprior = 4
+lambda_v.gprior = 4
+
+lambda.draw = lambda_s.gprior/rchisq(1, lambda_v.gprior)
+
+S = 300
+
+Sigma.posterior.draws = array(NA, c(N,N,S))
+A.posterior.draws = array(NA, c((1+p*N),N,S))
+lambda.posterior.draws = rep(NA,S)
+
+for (s in 1:S){
+  
+  lambda.gprior.diag = diag(lambda.draw, nrow(Y_ext))
+  
+  A_V.posterior     = solve(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%X_ext + solve(A_V.gprior))
+  A.posterior       = A_V.posterior%*%(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + solve(A_V.gprior)%*%A.gprior)
+  Sigma_s.posterior = t(Y_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + t(A.gprior)%*%solve(A_V.gprior)%*%A.gprior + Sigma_s.gprior - t(A.posterior)%*%solve(A_V.posterior)%*%A.posterior
+  Sigma_v.posterior = nrow(Y_ext) + Sigma_v.gprior
+  
+  Sigma.inv.draw      = rWishart(1, Sigma_v.posterior, solve(Sigma_s.posterior))[,,1]
+  Sigma.posterior.draws[,,s] = solve(Sigma.inv.draw)
+  
+  A.posterior.draws[,,s] = matrix(mvtnorm::rmvnorm(1, mean=as.vector(A.posterior), sigma=Sigma.posterior.draws[,,s]%x%A_V.posterior), ncol=2)
+  
+  lambda_s.posterior = sum(diag(Sigma.inv.draw%*%t(Y_ext - X_ext%*%A.posterior.draws[,,s])%*%(Y_ext - X_ext%*%A.posterior.draws[,,s]))) + lambda_s.gprior
+  lambda_v.posterior = nrow(Y_ext)*2 + lambda_v.gprior
+  
+  lambda.draw = lambda_s.posterior / rchisq(1, lambda_v.posterior)
+  lambda.posterior.draws[s] = lambda.draw
+}
+                            
+round(apply(A.posterior.draws, 1:2, mean),2)
+round(apply(Sigma.posterior.draws, 1:2, mean),2)
+round(mean(lambda.posterior.draws),2)
+
+```
+
+
+We can then compute forecasts for both models by sampling from the predictive densities. For each draw of $A$ and $\Sigma$, we sample h times from the predictive density in order to compute a forecast horizon of h periods. Each of the h draws are computed as 1 period ahead forecasts. Where the predictive density requires data which has not yet been observed this is replaced by the preceeding forecasts computed within the same iteration.
+
+
+```{r, echo=TRUE}
+#Predictive density function
+
+library(MASS)
+library(HDInterval)
+library(mvtnorm)
+library(plot3D)
+
+get_predictions = function(S, h, A.posterior, Sigma.posterior){
+  Y.h         = array(NA,c(h,N,S))
+  
+  for (s in 1:(S/1)){
+    x.Ti        = Y_ext[(nrow(Y_ext)-p+1):nrow(Y_ext),]
+    if (p>1){
+      x.Ti        = x.Ti[1:p,] 
+    }
+    for (i in 1:h){
+      x.T         = c(1,as.vector(t(x.Ti)))
+      Y.h[i,,s]   = rmvnorm(1, mean = x.T%*%A.posterior[,,s], sigma=Sigma.posterior[,,s])
+      if (p==1){
+        x.Ti        = Y.h[i,,s]
+      } else {
+        x.Ti        = rbind(Y.h[i,,s],x.Ti[1:(p-1),])
+      }
+    }
+  }
+  
+  point.f.1 = apply(Y.h[,1,],1,mean)
+  point.interval.1 = apply(Y.h[,1,],1,hdi,credMass=0.90)
+  
+  point.f.2 = apply(Y.h[,2,],1,mean)
+  point.interval.2 = apply(Y.h[,2,],1,hdi,credMass=0.90)
+  
+  point.f.3 = apply(Y.h[,3,],1,mean)
+  point.interval.3 = apply(Y.h[,3,],1,hdi,credMass=0.90)
+
+  point.f.4 = apply(Y.h[,4,],1,mean)
+  point.interval.4 = apply(Y.h[,4,],1,hdi,credMass=0.90)
+  
+  point.f.5 = apply(Y.h[,5,],1,mean)
+  point.interval.5 = apply(Y.h[,5,],1,hdi,credMass=0.90)
+  
+  point.f.6 = apply(Y.h[,6,],1,mean)
+  point.interval.6 = apply(Y.h[,6,],1,hdi,credMass=0.90)
+  
+  point.f.7 = apply(Y.h[,7,],1,mean)
+  point.interval.7 = apply(Y.h[,7,],1,hdi,credMass=0.90)
+  
+  point.f.8 = apply(Y.h[,8,],1,mean)
+  point.interval.8 = apply(Y.h[,8,],1,hdi,credMass=0.90)
+  
+  point.f.9 = apply(Y.h[,9,],1,mean)
+  point.interval.9 = apply(Y.h[,9,],1,hdi,credMass=0.90)
+  
+  point.f.10 = apply(Y.h[,10,],1,mean)
+  point.interval.10 = apply(Y.h[,10,],1,hdi,credMass=0.90)
+  
+  point.forecasts = list(point.f.1, point.f.2, point.f.3, point.f.4, point.f.5, point.f.6, point.f.7, point.f.8, point.f.9, point.f.10)
+  interval.forecasts = list(point.interval.1, point.interval.2, point.interval.3, point.interval.4, point.interval.5, point.interval.6, point.interval.7, point.interval.8, point.interval.9, point.interval.10)
+  
+  return(list(point.forecasts, interval.forecasts))
+}
+
+preds_ext = get_predictions(300, 20, A.posterior.draws, Sigma.posterior.draws)
+preds_base = get_predictions(300, 20, res[[1]], res[[2]])
+
+```
+
+The respective out of sample forecasts for 20 days ahead are as follows. The forecasts from the baseline model are plotted in blue and the T-distributed error model forecasts are plotted in red. 90% confidence intervals are denoted by the shaded regions.
+
+### 20 Day log RV Forecast Plots
+```{r, echo=TRUE}
+
+#Plotting function
+
+plot_pred = function(ix, preds, preds2){
+  h=length(preds[[1]][[1]])
+  xdates = c(y$Date, seq(y[length(y[,1]),'Date'], by='day', length.out=h-p))
+  
+  index_name = colnames(Y_ext)[ix]
+  plot(1:(length(Y_ext[,ix])+h), (c(Y_ext[,ix], preds[[1]][[ix]])), type='l', col='blue', ylab='', xlab='', main=paste(index_name,'log RV Forecasts'), xlim=c(4300,length(Y_ext[,ix])+h), xaxt='n', cex.axis=1, lwd=1)
+  polygon(c((length(Y_ext[,ix])):(length(Y_ext[,ix])+h), (length(Y_ext[,ix])+h):(length(Y_ext[,ix]))), (c(Y_ext[length(Y_ext[,ix]),ix], preds[[2]][[ix]]['lower',], preds[[2]][[ix]]['upper',h:1], Y_ext[length(Y_ext[,ix]),ix])), col=rgb(0, 0, 1,0.1), border=NA)
+  lines((c(Y_ext[,ix], preds2[[1]][[ix]])), type='l', col='red', ylab='', xlab='', main=paste(index_name,'log RV Forecasts'), xlim=c(4300,length(Y_ext[,ix])+h), xaxt='n', cex.axis=1, lwd=1)
+  lines(Y_ext[,ix], type='l', col='blue')
+  polygon(c((length(Y_ext[,ix])):(length(Y_ext[,ix])+h), (length(Y_ext[,ix])+h):(length(Y_ext[,ix]))), (c(Y_ext[length(Y_ext[,ix]),ix], preds2[[2]][[ix]]['lower',], preds2[[2]][[ix]]['upper',h:1], Y_ext[length(Y_ext[,ix]),ix])), col=rgb(1, 0, 0,0.1), border=NA)
+  axis(1, at=1:(length(Y_ext[,ix])+h), labels=xdates, tick=FALSE, cex.axis=1)
+}
+
+par(mfrow=c(5,2), mar=c(3,3,2,2))
+plot_pred(1, preds_base, preds_ext)
+plot_pred(2, preds_base, preds_ext)
+plot_pred(3, preds_base, preds_ext)
+plot_pred(4, preds_base, preds_ext)
+plot_pred(5, preds_base, preds_ext)
+plot_pred(6, preds_base, preds_ext)
+plot_pred(7, preds_base, preds_ext)
+plot_pred(8, preds_base, preds_ext)
+plot_pred(9, preds_base, preds_ext)
+plot_pred(10, preds_base, preds_ext)
+
+```
+
+As can be seen by the point forecasts, both model forecasts appear to converge back to a long term average. The forecasts trend higher over the forecast period for all variables, which might be explained as the model predicting volatility will normalise at a higher long run level after a period of relatively low volatility leading up to the forecast period. Forecasts in the T-distribution model appear to move back to the long run mean more quickly than that of the baseline model, suggesting faster mean reversion.
+
+Comparing the confidence intervals of the two models, we can see that the T-distribution model has tighter 90% CIs for all forecasts. This may suggest that our assumption of T-distributed errors is appropriate. If the data has fatter tails than would be captured by a Normal distribution this may have been leading to larger variances estimated by the baseline model. The extended model allows for outliers in the data and therefore estimates the variance more accurately, leading to tighter intervals.
+
+We can transform the variables and forecast back into daily RVs by taking the exponent of the variables. The RV forecasts can then be visualised as follows:
+
+### 20 day RV Forecasts
+```{r}
+
+plot_pred_exp = function(ix, preds, preds2){
+  h=length(preds[[1]][[1]])
+  xdates = c(y$Date, seq(y[length(y[,1]),'Date'], by='day', length.out=h-p))
+  
+  index_name = colnames(Y_ext)[ix]
+  plot(1:(length(Y_ext[,ix])+h), exp(c(Y_ext[,ix], preds[[1]][[ix]])), type='l', col='blue', ylab='', xlab='', ylim=c(0,0.0006), main=paste(index_name,'RV Forecasts'), xlim=c(4300,length(Y_ext[,ix])+h), xaxt='n', cex.axis=1, lwd=1)
+  polygon(c((length(Y_ext[,ix])):(length(Y_ext[,ix])+h), (length(Y_ext[,ix])+h):(length(Y_ext[,ix]))), exp(c(Y_ext[length(Y_ext[,ix]),ix], preds[[2]][[ix]]['lower',], preds[[2]][[ix]]['upper',h:1], Y_ext[length(Y_ext[,ix]),ix])), col=rgb(0, 0, 1,0.1), border=NA)
+  lines(exp(c(Y_ext[,ix], preds2[[1]][[ix]])), type='l', col='red', ylab='', xlab='', xlim=c(4300,length(Y_ext[,ix])+h), xaxt='n', cex.axis=1, lwd=1)
+  lines(exp(Y_ext[,ix]), type='l', col='blue')
+  polygon(c((length(Y_ext[,ix])):(length(Y_ext[,ix])+h), (length(Y_ext[,ix])+h):(length(Y_ext[,ix]))), exp(c(Y_ext[length(Y_ext[,ix]),ix], preds2[[2]][[ix]]['lower',], preds2[[2]][[ix]]['upper',h:1], Y_ext[length(Y_ext[,ix]),ix])), col=rgb(1, 0, 0,0.1), border=NA)
+  axis(1, at=1:(length(Y_ext[,ix])+h), labels=xdates, tick=FALSE, cex.axis=1)
+}
+
+par(mfrow=c(5,2), mar=c(3,3,2,2))
+plot_pred_exp(1, preds_base, preds_ext)
+plot_pred_exp(2, preds_base, preds_ext)
+plot_pred_exp(3, preds_base, preds_ext)
+plot_pred_exp(4, preds_base, preds_ext)
+plot_pred_exp(5, preds_base, preds_ext)
+plot_pred_exp(6, preds_base, preds_ext)
+plot_pred_exp(7, preds_base, preds_ext)
+plot_pred_exp(8, preds_base, preds_ext)
+plot_pred_exp(9, preds_base, preds_ext)
+plot_pred_exp(10, preds_base, preds_ext)
+
+```
+
