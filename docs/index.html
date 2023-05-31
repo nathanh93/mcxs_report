@@ -565,16 +565,16 @@ p(\Sigma|Y,X) &amp;= IW_N(\bar{S},\bar{\nu}) \\
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,]  0.03 -0.11
-[2,]  1.00  0.01
-[3,] -0.01  0.99</code></pre>
+<pre><code>     [,1] [,2]
+[1,] 0.17 0.12
+[2,] 0.99 0.01
+[3,] 0.00 0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,]  1.04 -0.02
-[2,] -0.02  0.96</code></pre>
+<pre><code>     [,1] [,2]
+[1,] 0.98 0.03
+[2,] 0.03 1.06</code></pre>
 </div>
 </div>
 <p>As shown above the estimated parameter means closely match the expected values for the data generating process.</p>
@@ -692,20 +692,20 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,]  0.03 -0.11
-[2,]  1.00  0.01
-[3,] -0.01  0.99</code></pre>
+<pre><code>     [,1] [,2]
+[1,] 0.17 0.11
+[2,] 0.99 0.01
+[3,] 0.00 0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,]  1.04 -0.02
-[2,] -0.02  0.96</code></pre>
+<pre><code>     [,1] [,2]
+[1,] 0.97 0.03
+[2,] 0.03 1.05</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.01</code></pre>
+<pre><code>[1] 1.02</code></pre>
 </div>
 </div>
 <p>As can be seen, when the extended model estimation routine is applied to the simulated bivariate random walk data, the estimates of <span class="math inline">\(A\)</span> and <span class="math inline">\(\Sigma\)</span> again match the true parameter values closely.</p>
@@ -735,74 +735,25 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">get_posteriors</span>(<span class="dv">300</span>, Y_ext, X_ext, pris)</span>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>)) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>       [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7] [,8]  [,9] [,10]
- [1,] -3.18 -0.09 -0.94 -0.76 -0.66 -2.52 -1.99 0.25 -1.62 -1.14
- [2,]  0.21  0.04  0.04  0.08 -0.02  0.02  0.00 0.04 -0.04  0.02
- [3,]  0.08  0.14  0.05  0.08  0.06  0.04  0.05 0.13  0.05  0.07
- [4,]  0.05  0.05  0.12  0.09  0.10  0.01  0.03 0.06  0.01  0.12
- [5,]  0.10  0.04  0.06  0.10  0.03  0.04  0.02 0.04  0.02  0.04
- [6,] -0.02  0.06  0.10  0.05  0.17  0.02  0.04 0.05  0.05  0.12
- [7,]  0.06  0.05  0.01  0.04  0.02  0.20  0.04 0.05  0.08  0.00
- [8,]  0.00  0.03  0.01  0.01  0.03  0.03  0.26 0.03  0.04  0.02
- [9,]  0.08  0.15  0.07  0.09  0.06  0.05  0.06 0.17  0.06  0.07
-[10,] -0.04  0.07  0.01  0.02  0.05  0.08  0.05 0.07  0.33  0.00
-[11,]  0.03  0.04  0.09  0.06  0.10 -0.01  0.03 0.04 -0.01  0.12
-[12,]  0.07  0.01  0.01  0.03  0.00  0.01  0.00 0.01 -0.01  0.01
-[13,]  0.00  0.04  0.01  0.01  0.01  0.01  0.01 0.04  0.01  0.01
-[14,]  0.01  0.01  0.03  0.02  0.03  0.00  0.00 0.02  0.00  0.03
-[15,]  0.02  0.01  0.02  0.03  0.01  0.01  0.00 0.02  0.00  0.02
-[16,] -0.01  0.02  0.03  0.01  0.05  0.00  0.01 0.01  0.01  0.03
-[17,]  0.01  0.01  0.01  0.01  0.01  0.06  0.01 0.01  0.03  0.00
-[18,]  0.00  0.01  0.01  0.00  0.01  0.01  0.07 0.01  0.01  0.01
-[19,]  0.00  0.04  0.01  0.02  0.01  0.01  0.01 0.04  0.01  0.01
-[20,] -0.02  0.01  0.00  0.00  0.01  0.02  0.01 0.02  0.09  0.00
-[21,]  0.00  0.01  0.03  0.02  0.03  0.00  0.00 0.01  0.00  0.04
-[22,]  0.03  0.00  0.01  0.01  0.00  0.01  0.00 0.00 -0.01  0.00
-[23,]  0.00  0.02  0.00  0.01  0.01  0.01  0.00 0.02  0.01  0.00
-[24,]  0.00  0.01  0.02  0.01  0.01  0.00  0.00 0.01  0.00  0.01
-[25,]  0.01  0.01  0.01  0.02  0.01  0.00  0.00 0.01  0.00  0.01
-[26,]  0.00  0.01  0.01  0.01  0.02  0.00  0.00 0.01  0.01  0.02
-[27,]  0.00  0.00  0.00  0.00  0.00  0.03  0.00 0.01  0.01  0.00
-[28,]  0.00  0.00  0.00  0.00  0.00  0.01  0.03 0.00  0.01  0.00
-[29,]  0.00  0.02  0.01  0.01  0.00  0.01  0.00 0.02  0.01  0.01
-[30,] -0.01  0.01  0.00  0.00  0.01  0.01  0.00 0.01  0.04  0.00
-[31,]  0.00  0.01  0.01  0.01  0.02  0.00  0.00 0.01  0.00  0.02
-[32,]  0.02  0.00  0.00  0.01  0.00  0.00  0.00 0.00  0.00  0.00
-[33,]  0.00  0.01  0.00  0.00  0.00  0.00  0.00 0.01  0.00  0.00
-[34,]  0.00  0.00  0.01  0.01  0.01  0.00  0.00 0.01  0.00  0.01
-[35,]  0.01  0.00  0.01  0.01  0.00  0.00  0.00 0.00  0.00  0.01
-[36,]  0.00  0.00  0.01  0.00  0.01  0.00  0.00 0.00  0.00  0.01
-[37,]  0.00  0.00  0.00  0.00  0.00  0.01  0.00 0.00  0.01  0.00
-[38,]  0.00  0.00  0.00  0.00  0.00  0.00  0.02 0.00  0.00  0.00
-[39,]  0.00  0.01  0.00  0.00  0.00  0.00  0.00 0.01  0.00  0.00
-[40,]  0.00  0.00  0.00  0.00  0.00  0.01  0.00 0.01  0.02  0.00
-[41,]  0.00  0.00  0.01  0.01  0.01  0.00  0.00 0.00  0.00  0.01
-[42,]  0.01  0.00  0.00  0.01  0.00  0.00  0.00 0.00  0.00  0.00
-[43,]  0.00  0.01  0.00  0.00  0.00  0.00  0.00 0.01  0.00  0.00
-[44,]  0.00  0.00  0.01  0.00  0.01  0.00  0.00 0.00  0.00  0.01
-[45,]  0.00  0.00  0.00  0.01  0.00  0.00  0.00 0.00  0.00  0.00
-[46,]  0.00  0.00  0.01  0.00  0.01  0.00  0.00 0.00  0.00  0.01
-[47,]  0.00  0.00  0.00  0.00  0.00  0.01  0.00 0.00  0.00  0.00
-[48,]  0.00  0.00  0.00  0.00  0.00  0.00  0.01 0.00  0.00  0.00
-[49,]  0.00  0.01  0.00  0.00  0.00  0.00  0.00 0.01  0.00  0.00
-[50,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00 0.00  0.01  0.00
-[51,]  0.00  0.00  0.01  0.00  0.01  0.00  0.00 0.00  0.00  0.01</code></pre>
+<pre><code>      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7] [,8]  [,9] [,10]
+[1,] -3.18 -0.11 -0.94 -0.77 -0.67 -2.54 -2.01 0.24 -1.64 -1.14
+[2,]  0.21  0.04  0.04  0.08 -0.02  0.02  0.00 0.04 -0.04  0.02
+[3,]  0.08  0.14  0.05  0.07  0.06  0.04  0.05 0.13  0.05  0.07
+[4,]  0.05  0.05  0.12  0.09  0.10  0.01  0.02 0.06  0.01  0.11
+[5,]  0.10  0.04  0.06  0.11  0.03  0.04  0.02 0.04  0.01  0.04
+[6,] -0.02  0.06  0.10  0.05  0.17  0.02  0.04 0.05  0.05  0.12</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>)) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]  [,9] [,10]
- [1,]  0.83 0.07 0.08 0.15 0.04 0.06 0.07 0.07 -0.01  0.09
- [2,]  0.07 0.83 0.17 0.19 0.18 0.08 0.08 0.42  0.09  0.19
- [3,]  0.08 0.17 0.51 0.19 0.24 0.05 0.06 0.18  0.05  0.26
- [4,]  0.15 0.19 0.19 0.64 0.18 0.07 0.07 0.19  0.05  0.24
- [5,]  0.04 0.18 0.24 0.18 0.58 0.05 0.07 0.18  0.07  0.28
- [6,]  0.06 0.08 0.05 0.07 0.05 0.56 0.09 0.08  0.12  0.04
- [7,]  0.07 0.08 0.06 0.07 0.07 0.09 0.68 0.09  0.10  0.08
- [8,]  0.07 0.42 0.18 0.19 0.18 0.08 0.09 0.80  0.09  0.19
- [9,] -0.01 0.09 0.05 0.05 0.07 0.12 0.10 0.09  0.61  0.04
-[10,]  0.09 0.19 0.26 0.24 0.28 0.04 0.08 0.19  0.04  0.60</code></pre>
+<pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]  [,9] [,10]
+[1,] 0.83 0.07 0.08 0.15 0.04 0.06 0.07 0.08 -0.01  0.09
+[2,] 0.07 0.82 0.17 0.19 0.18 0.08 0.08 0.42  0.09  0.19
+[3,] 0.08 0.17 0.51 0.19 0.24 0.05 0.06 0.18  0.05  0.26
+[4,] 0.15 0.19 0.19 0.65 0.18 0.07 0.07 0.19  0.05  0.24
+[5,] 0.04 0.18 0.24 0.18 0.57 0.05 0.07 0.18  0.07  0.27
+[6,] 0.06 0.08 0.05 0.07 0.05 0.55 0.09 0.08  0.11  0.04</code></pre>
 </div>
 </div>
 </section>
@@ -846,78 +797,29 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>  lambda.posterior.draws[s] <span class="ot">=</span> lambda.draw</span>
 <span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>                            </span>
-<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>       [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]  [,9] [,10]
- [1,] -4.59 -1.30 -1.99 -2.00 -1.64 -3.94 -3.33 -0.97 -2.97 -2.03
- [2,]  0.12  0.04  0.04  0.06  0.01  0.02  0.01  0.04 -0.02  0.03
- [3,]  0.06  0.10  0.06  0.07  0.06  0.04  0.05  0.10  0.05  0.06
- [4,]  0.04  0.06  0.08  0.07  0.08  0.02  0.03  0.06  0.02  0.08
- [5,]  0.07  0.05  0.06  0.07  0.05  0.03  0.03  0.06  0.02  0.05
- [6,]  0.01  0.06  0.08  0.05  0.10  0.03  0.04  0.06  0.04  0.08
- [7,]  0.04  0.04  0.02  0.03  0.03  0.10  0.04  0.05  0.06  0.02
- [8,]  0.01  0.04  0.03  0.03  0.04  0.03  0.13  0.04  0.05  0.03
- [9,]  0.06  0.10  0.06  0.07  0.06  0.05  0.05  0.11  0.06  0.07
-[10,] -0.01  0.06  0.02  0.03  0.04  0.06  0.05  0.06  0.17  0.02
-[11,]  0.04  0.05  0.07  0.06  0.08  0.01  0.03  0.05  0.01  0.08
-[12,]  0.03  0.01  0.01  0.02  0.00  0.01  0.00  0.01  0.00  0.01
-[13,]  0.01  0.03  0.01  0.02  0.01  0.01  0.01  0.02  0.01  0.01
-[14,]  0.01  0.01  0.02  0.02  0.02  0.01  0.01  0.02  0.00  0.02
-[15,]  0.02  0.01  0.02  0.02  0.01  0.01  0.01  0.02  0.01  0.01
-[16,]  0.00  0.01  0.02  0.01  0.03  0.01  0.01  0.01  0.01  0.02
-[17,]  0.01  0.01  0.01  0.01  0.01  0.02  0.01  0.01  0.02  0.00
-[18,]  0.00  0.01  0.01  0.01  0.01  0.01  0.03  0.01  0.01  0.01
-[19,]  0.01  0.02  0.01  0.02  0.01  0.01  0.01  0.03  0.01  0.01
-[20,]  0.00  0.01  0.00  0.01  0.01  0.02  0.01  0.02  0.04  0.00
-[21,]  0.01  0.01  0.02  0.01  0.02  0.00  0.01  0.01  0.00  0.02
-[22,]  0.01  0.00  0.01  0.01  0.00  0.00  0.00  0.00  0.00  0.00
-[23,]  0.00  0.01  0.01  0.01  0.01  0.00  0.00  0.01  0.01  0.01
-[24,]  0.00  0.01  0.01  0.01  0.01  0.00  0.00  0.01  0.00  0.01
-[25,]  0.01  0.01  0.01  0.01  0.01  0.00  0.00  0.01  0.00  0.01
-[26,]  0.00  0.01  0.01  0.01  0.01  0.00  0.00  0.01  0.00  0.01
-[27,]  0.00  0.00  0.00  0.00  0.00  0.01  0.00  0.00  0.01  0.00
-[28,]  0.00  0.00  0.00  0.00  0.00  0.00  0.01  0.00  0.00  0.00
-[29,]  0.00  0.01  0.01  0.01  0.01  0.01  0.00  0.01  0.01  0.01
-[30,]  0.00  0.01  0.00  0.00  0.01  0.01  0.01  0.01  0.02  0.00
-[31,]  0.00  0.01  0.01  0.01  0.01  0.00  0.00  0.01  0.00  0.01
-[32,]  0.01  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
-[33,]  0.00  0.01  0.00  0.00  0.00  0.00  0.00  0.01  0.00  0.00
-[34,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
-[35,]  0.00  0.00  0.00  0.01  0.00  0.00  0.00  0.00  0.00  0.00
-[36,]  0.00  0.00  0.00  0.00  0.01  0.00  0.00  0.00  0.00  0.00
-[37,]  0.00  0.00  0.00  0.00  0.00  0.01  0.00  0.00  0.00  0.00
-[38,]  0.00  0.00  0.00  0.00  0.00  0.00  0.01  0.00  0.00  0.00
-[39,]  0.00  0.01  0.00  0.00  0.00  0.00  0.00  0.01  0.00  0.00
-[40,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.01  0.00
-[41,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.01
-[42,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
-[43,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
-[44,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
-[45,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
-[46,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
-[47,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
-[48,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
-[49,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00
-[50,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.01  0.00
-[51,]  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.00</code></pre>
+<pre><code>      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]  [,9] [,10]
+[1,] -4.63 -1.28 -2.01 -2.01 -1.65 -3.97 -3.33 -0.97 -2.98 -2.05
+[2,]  0.12  0.04  0.04  0.06  0.01  0.02  0.01  0.04 -0.02  0.03
+[3,]  0.06  0.10  0.06  0.07  0.06  0.04  0.05  0.10  0.05  0.06
+[4,]  0.04  0.06  0.08  0.07  0.08  0.02  0.03  0.06  0.02  0.08
+[5,]  0.07  0.05  0.06  0.07  0.05  0.03  0.03  0.06  0.02  0.05
+[6,]  0.01  0.06  0.08  0.05  0.10  0.02  0.04  0.06  0.04  0.08</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
- [1,] 0.50 0.03 0.04 0.06 0.02 0.03 0.03 0.04 0.00  0.04
- [2,] 0.03 0.52 0.07 0.07 0.07 0.04 0.04 0.14 0.04  0.07
- [3,] 0.04 0.07 0.32 0.07 0.09 0.02 0.03 0.07 0.02  0.09
- [4,] 0.06 0.07 0.07 0.40 0.07 0.03 0.03 0.07 0.02  0.08
- [5,] 0.02 0.07 0.09 0.07 0.36 0.03 0.04 0.07 0.04  0.10
- [6,] 0.03 0.04 0.02 0.03 0.03 0.33 0.04 0.04 0.05  0.02
- [7,] 0.03 0.04 0.03 0.03 0.04 0.04 0.41 0.04 0.04  0.03
- [8,] 0.04 0.14 0.07 0.07 0.07 0.04 0.04 0.50 0.05  0.07
- [9,] 0.00 0.04 0.02 0.02 0.04 0.05 0.04 0.05 0.36  0.02
-[10,] 0.04 0.07 0.09 0.08 0.10 0.02 0.03 0.07 0.02  0.38</code></pre>
+<pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+[1,] 0.49 0.03 0.04 0.06 0.02 0.02 0.03 0.04 0.00  0.04
+[2,] 0.03 0.52 0.07 0.07 0.07 0.04 0.04 0.14 0.05  0.07
+[3,] 0.04 0.07 0.32 0.07 0.09 0.02 0.03 0.07 0.02  0.09
+[4,] 0.06 0.07 0.07 0.40 0.07 0.03 0.03 0.07 0.02  0.08
+[5,] 0.02 0.07 0.09 0.07 0.35 0.03 0.04 0.07 0.04  0.09
+[6,] 0.02 0.04 0.02 0.03 0.03 0.33 0.04 0.04 0.05  0.02</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.96</code></pre>
+<pre><code>[1] 3.99</code></pre>
 </div>
 </div>
 <p>We can then compute forecasts for both models by sampling from the predictive densities. For each draw of <span class="math inline">\(A\)</span> and <span class="math inline">\(\Sigma\)</span>, we sample h times from the predictive density in order to compute a forecast horizon of h periods. Each of the h draws are computed as 1 period ahead forecasts. Where the predictive density requires data which has not yet been observed this is replaced by the preceeding forecasts computed within the same iteration.</p>
@@ -1009,19 +911,22 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at=</span><span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(Y_ext[,ix])<span class="sc">+</span>h), <span class="at">labels=</span>xdates, <span class="at">tick=</span><span class="cn">FALSE</span>, <span class="at">cex.axis=</span><span class="dv">1</span>)</span>
 <span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">2</span>), <span class="at">mar=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>), <span class="at">mar=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">2</span>))</span>
 <span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">1</span>, preds_base, preds_ext)</span>
 <span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">2</span>, preds_base, preds_ext)</span>
 <span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">3</span>, preds_base, preds_ext)</span>
 <span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">4</span>, preds_base, preds_ext)</span>
 <span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">5</span>, preds_base, preds_ext)</span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">6</span>, preds_base, preds_ext)</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">7</span>, preds_base, preds_ext)</span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">8</span>, preds_base, preds_ext)</span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">9</span>, preds_base, preds_ext)</span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">10</span>, preds_base, preds_ext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">6</span>, preds_base, preds_ext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">7</span>, preds_base, preds_ext)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">8</span>, preds_base, preds_ext)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">9</span>, preds_base, preds_ext)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pred</span>(<span class="dv">10</span>, preds_base, preds_ext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>As can be seen by the point forecasts, both model forecasts appear to converge back to a long term average. The forecasts trend higher over the forecast period for all variables, which might be explained as the model predicting volatility will normalise at a higher long run level after a period of relatively low volatility leading up to the forecast period. Forecasts in the T-distribution model appear to move back to the long run mean more quickly than that of the baseline model, suggesting faster mean reversion.</p>
@@ -1033,6 +938,9 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 
