@@ -558,16 +558,16 @@ p(\Sigma|Y,X) &amp;= IW_N(\bar{S},\bar{\nu}) \\
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,] -0.07 -0.19
-[2,]  1.00  0.00
-[3,]  0.00  0.99</code></pre>
+<pre><code>      [,1] [,2]
+[1,] -0.22 0.10
+[2,]  0.99 0.00
+[3,]  0.00 0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 0.89 0.02
-[2,] 0.02 0.99</code></pre>
+<pre><code>      [,1]  [,2]
+[1,]  0.99 -0.04
+[2,] -0.04  1.00</code></pre>
 </div>
 </div>
 <p>As shown above the estimated parameter means closely match the expected values for the data generating process.</p>
@@ -685,20 +685,20 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,] -0.07 -0.19
-[2,]  1.00  0.00
-[3,]  0.00  0.99</code></pre>
+<pre><code>      [,1] [,2]
+[1,] -0.23 0.11
+[2,]  0.99 0.00
+[3,]  0.00 0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 0.89 0.02
-[2,] 0.02 0.99</code></pre>
+<pre><code>      [,1]  [,2]
+[1,]  0.99 -0.04
+[2,] -0.04  0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
+<pre><code>[1] 1.01</code></pre>
 </div>
 </div>
 <p>As can be seen, when the extended model estimation routine is applied to the simulated bivariate random walk data, the estimates of <span class="math inline">\(A\)</span> and <span class="math inline">\(\Sigma\)</span> again match the true parameter values closely.</p>
