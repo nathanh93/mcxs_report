@@ -557,7 +557,7 @@ lambda_v.gprior = 4
 
 lambda.draw = lambda_s.gprior/rchisq(1, lambda_v.gprior)
 
-S = 300
+S = 300 # A limited number of draws are chosen for speed of estimation. This will be increased in the final submission.
 
 Sigma.posterior.draws = array(NA, c(N,N,S))
 A.posterior.draws = array(NA, c((1+p*N),N,S))
@@ -594,7 +594,7 @@ round(mean(lambda.posterior.draws),2)
 We can then compute forecasts for both models by sampling from the predictive densities. For each draw of $A$ and $\Sigma$, we sample h times from the predictive density in order to compute a forecast horizon of h periods. Each of the h draws are computed as 1 period ahead forecasts. Where the predictive density requires data which has not yet been observed this is replaced by the preceeding forecasts computed within the same iteration.
 
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 #Predictive density function
 
 library(MASS)
@@ -662,7 +662,7 @@ preds_base = get_predictions(300, 20, res[[1]], res[[2]])
 
 ```
 
-The respective out of sample forecasts for 20 days ahead are as follows. The forecasts from the baseline model are plotted in blue and the T-distributed error model forecasts are plotted in red. 90% confidence intervals are denoted by the shaded regions.
+The respective out of sample forecasts for 20 days ahead are plotted below. The forecasts from the baseline model are plotted in blue and the T-distributed error model forecasts are plotted in red. 90% confidence intervals are denoted by the shaded regions.
 
 ### 20 Day log RV Forecast Plots
 ```{r, echo=TRUE}
@@ -682,7 +682,11 @@ plot_pred = function(ix, preds, preds2){
   axis(1, at=1:(length(Y_ext[,ix])+h), labels=xdates, tick=FALSE, cex.axis=1)
 }
 
-par(mfrow=c(3,2), mar=c(3,3,2,2))
+```
+
+```{r}
+
+par(mfrow=c(2,2), mar=c(2,2,2,2))
 plot_pred(1, preds_base, preds_ext)
 plot_pred(2, preds_base, preds_ext)
 plot_pred(3, preds_base, preds_ext)
@@ -696,11 +700,12 @@ plot_pred(10, preds_base, preds_ext)
 
 ```
 
+
 As can be seen by the point forecasts, both model forecasts appear to converge back to a long term average. The forecasts trend higher over the forecast period for all variables, which might be explained as the model predicting volatility will normalise at a higher long run level after a period of relatively low volatility leading up to the forecast period. Forecasts in the T-distribution model appear to move back to the long run mean more quickly than that of the baseline model, suggesting faster mean reversion.
 
 Comparing the confidence intervals of the two models, we can see that the T-distribution model has tighter 90% CIs for all forecasts. This may suggest that our assumption of T-distributed errors is appropriate. If the data has fatter tails than would be captured by a Normal distribution this may have been leading to larger variances estimated by the baseline model. The extended model allows for outliers in the data and therefore estimates the variance more accurately, leading to tighter intervals.
 
-We can transform the variables and forecast back into daily RVs by taking the exponent of the variables. The RV forecasts can then be visualised as follows:
+We can transform the variables and forecasts back into daily RVs by taking the exponent of the variables. Visually the forecasts seem reasonable given the historical data, with the forecasts again reverting towards the long term average. The confidence intervals also look sensible given the transformation back to levels, with the width of the band increasing as the forecasted RV increases as we would expect from the transformation. Again the T-Distribution model exhibits tighter CIs.
 
 ### 20 day RV Forecasts
 ```{r }
@@ -718,7 +723,7 @@ plot_pred_exp = function(ix, preds, preds2){
   axis(1, at=1:(length(Y_ext[,ix])+h), labels=xdates, tick=FALSE, cex.axis=1)
 }
 
-par(mfrow=c(3,2), mar=c(3,3,2,2))
+par(mfrow=c(2,2), mar=c(2,2,2,2))
 plot_pred_exp(1, preds_base, preds_ext)
 plot_pred_exp(2, preds_base, preds_ext)
 plot_pred_exp(3, preds_base, preds_ext)
