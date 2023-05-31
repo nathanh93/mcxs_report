@@ -538,8 +538,8 @@ pris = list(A.pri, V.pri, S.pri, nu.pri)
 
 res = get_posteriors(300, Y_ext, X_ext, pris)
 
-round(apply(res[[1]],1:2,mean),2) #A posterior mean
-round(apply(res[[2]],1:2,mean),2) #Sigma posterior mean
+head(round(apply(res[[1]],1:2,mean),2)) #A posterior mean
+head(round(apply(res[[2]],1:2,mean),2)) #Sigma posterior mean
 
 ```
 
@@ -584,8 +584,8 @@ for (s in 1:S){
   lambda.posterior.draws[s] = lambda.draw
 }
                             
-round(apply(A.posterior.draws, 1:2, mean),2)
-round(apply(Sigma.posterior.draws, 1:2, mean),2)
+head(round(apply(A.posterior.draws, 1:2, mean),2))
+head(round(apply(Sigma.posterior.draws, 1:2, mean),2))
 round(mean(lambda.posterior.draws),2)
 
 ```
@@ -682,7 +682,7 @@ plot_pred = function(ix, preds, preds2){
   axis(1, at=1:(length(Y_ext[,ix])+h), labels=xdates, tick=FALSE, cex.axis=1)
 }
 
-par(mfrow=c(5,2), mar=c(3,3,2,2))
+par(mfrow=c(3,2), mar=c(3,3,2,2))
 plot_pred(1, preds_base, preds_ext)
 plot_pred(2, preds_base, preds_ext)
 plot_pred(3, preds_base, preds_ext)
@@ -703,7 +703,7 @@ Comparing the confidence intervals of the two models, we can see that the T-dist
 We can transform the variables and forecast back into daily RVs by taking the exponent of the variables. The RV forecasts can then be visualised as follows:
 
 ### 20 day RV Forecasts
-```{r}
+```{r }
 
 plot_pred_exp = function(ix, preds, preds2){
   h=length(preds[[1]][[1]])
@@ -718,7 +718,7 @@ plot_pred_exp = function(ix, preds, preds2){
   axis(1, at=1:(length(Y_ext[,ix])+h), labels=xdates, tick=FALSE, cex.axis=1)
 }
 
-par(mfrow=c(5,2), mar=c(3,3,2,2))
+par(mfrow=c(3,2), mar=c(3,3,2,2))
 plot_pred_exp(1, preds_base, preds_ext)
 plot_pred_exp(2, preds_base, preds_ext)
 plot_pred_exp(3, preds_base, preds_ext)
