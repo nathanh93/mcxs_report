@@ -321,16 +321,35 @@ for (i in 1:p){
 Y_ext = as.matrix(Y_ext)
 X_ext = as.matrix(X_ext)
 
-A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
-Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/nrow(Y_ext)
+# A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
+# Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/nrow(Y_ext)
+# 
+# kappa.1     = 0.02^2
+# kappa.2     = 100
+# A.pri     = matrix(0, (1+p*N), N)
+# A.pri[2:3,] = diag(2)
+# V.pri     = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+# S.pri     = diag(diag(Sigma.hat))
+# nu.pri    = N+1
 
-kappa.1     = 0.02^2
-kappa.2     = 100
-A.pri     = matrix(0, (1+p*N), N)
-A.pri[2:3,] = diag(2)
-V.pri     = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
-S.pri     = diag(diag(Sigma.hat))
-nu.pri    = N+1
+Prior <-function(N,P,X_ext, Y_ext){
+        A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
+        Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/nrow(Y_ext)
+        
+        kappa.1     = 0.02^2
+        kappa.2     = 100
+        A.pri     = matrix(0, (1+p*N), N)
+        A.pri[2:3,] = diag(2)
+        V.pri     = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+        S.pri     = diag(diag(Sigma.hat))
+        nu.pri    = N+1
+  
+        return(list(A.prior = A.pri,
+                    V.prior = V.pri,
+                    S.prior = S.pri,
+                    nu.prior= nu.pri
+                    ))
+}
 
 pris = list(A.pri, V.pri, S.pri, nu.pri)
 
