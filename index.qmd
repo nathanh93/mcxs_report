@@ -465,40 +465,81 @@ We repeat the above steps for the desired amount of iterations and collect the p
 ### Gibbs Sampler code for t-distributed errors:
 ```{r, echo=TRUE}
 
-#Setting priors and initialising parameters
-A.gprior = matrix(0, 3, 2)
-A_V.gprior = diag(1,3)
-Sigma_s.gprior = diag(2)
-Sigma_v.gprior = 3
-lambda_s.gprior = 1000
-lambda_v.gprior = 1000
+# #Setting priors and initialising parameters
+# A.gprior = matrix(0, 3, 2)
+# A_V.gprior = diag(1,3)
+# Sigma_s.gprior = diag(2)
+# Sigma_v.gprior = 3
+# lambda_s.gprior = 1000
+# lambda_v.gprior = 1000
+# 
+# lambda.draw = lambda_s.gprior/rchisq(1, lambda_v.gprior)
+# 
+# S = 1000
+# 
+# Sigma.posterior.draws = array(NA, c(2,2,S))
+# A.posterior.draws = array(NA, c(3,2,S))
+# lambda.posterior.draws = rep(NA,S)
+# for (s in 1:S){
+#   
+#   lambda.gprior.diag = diag(lambda.draw, nrow(Y_ext))
+#   
+#   A_V.posterior     = solve(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%X_ext + solve(A_V.gprior))
+#   A.posterior       = A_V.posterior%*%(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + solve(A_V.gprior)%*%A.gprior)
+#   Sigma_s.posterior = t(Y_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + t(A.gprior)%*%solve(A_V.gprior)%*%A.gprior + Sigma_s.gprior - t(A.posterior)%*%solve(A_V.posterior)%*%A.posterior
+#   Sigma_v.posterior = nrow(Y_ext) + Sigma_v.gprior
+#   
+#   Sigma.inv.draw      = rWishart(1, Sigma_v.posterior, solve(Sigma_s.posterior))[,,1]
+#   Sigma.posterior.draws[,,s] = solve(Sigma.inv.draw)
+#   
+#   A.posterior.draws[,,s] = matrix(mvtnorm::rmvnorm(1, mean=as.vector(A.posterior), sigma=Sigma.posterior.draws[,,s]%x%A_V.posterior), ncol=2)
+#   
+#   lambda_s.posterior = sum(diag(Sigma.inv.draw%*%t(Y_ext - X_ext%*%A.posterior.draws[,,s])%*%(Y_ext - X_ext%*%A.posterior.draws[,,s]))) + lambda_s.gprior
+#   lambda_v.posterior = nrow(Y_ext)*2 + lambda_v.gprior
+#   
+#   lambda.draw = lambda_s.posterior / rchisq(1, lambda_v.posterior)
+#   lambda.posterior.draws[s] = lambda.draw
+# }
 
-lambda.draw = lambda_s.gprior/rchisq(1, lambda_v.gprior)
+GS_tdistribution <- function(Y_ext, X_ext, S = 1000) {
+  # Set priors
+  A.gprior = matrix(0, 3, 2)
+  A_V.gprior = diag(1,3)
+  Sigma_s.gprior = diag(2)
+  Sigma_v.gprior = 3
+  lambda_s.gprior = 1000
+  lambda_v.gprior = 1000
 
-S = 1000
+  lambda.draw = lambda_s.gprior/rchisq(1, lambda_v.gprior)
+  
+  # Initialize arrays to store posterior draws
+  Sigma.posterior.draws = array(NA, c(2,2,S))
+  A.posterior.draws = array(NA, c(3,2,S))
+  lambda.posterior.draws = rep(NA,S)
 
-Sigma.posterior.draws = array(NA, c(2,2,S))
-A.posterior.draws = array(NA, c(3,2,S))
-lambda.posterior.draws = rep(NA,S)
-for (s in 1:S){
-  
-  lambda.gprior.diag = diag(lambda.draw, nrow(Y_ext))
-  
-  A_V.posterior     = solve(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%X_ext + solve(A_V.gprior))
-  A.posterior       = A_V.posterior%*%(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + solve(A_V.gprior)%*%A.gprior)
-  Sigma_s.posterior = t(Y_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + t(A.gprior)%*%solve(A_V.gprior)%*%A.gprior + Sigma_s.gprior - t(A.posterior)%*%solve(A_V.posterior)%*%A.posterior
-  Sigma_v.posterior = nrow(Y_ext) + Sigma_v.gprior
-  
-  Sigma.inv.draw      = rWishart(1, Sigma_v.posterior, solve(Sigma_s.posterior))[,,1]
-  Sigma.posterior.draws[,,s] = solve(Sigma.inv.draw)
-  
-  A.posterior.draws[,,s] = matrix(mvtnorm::rmvnorm(1, mean=as.vector(A.posterior), sigma=Sigma.posterior.draws[,,s]%x%A_V.posterior), ncol=2)
-  
-  lambda_s.posterior = sum(diag(Sigma.inv.draw%*%t(Y_ext - X_ext%*%A.posterior.draws[,,s])%*%(Y_ext - X_ext%*%A.posterior.draws[,,s]))) + lambda_s.gprior
-  lambda_v.posterior = nrow(Y_ext)*2 + lambda_v.gprior
-  
-  lambda.draw = lambda_s.posterior / rchisq(1, lambda_v.posterior)
-  lambda.posterior.draws[s] = lambda.draw
+  # Loop over S iterations
+  for (s in 1:S){
+    lambda.gprior.diag = diag(lambda.draw, nrow(Y_ext))
+    
+    A_V.posterior     = solve(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%X_ext + solve(A_V.gprior))
+    A.posterior       = A_V.posterior%*%(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + solve(A_V.gprior)%*%A.gprior)
+    Sigma_s.posterior = t(Y_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + t(A.gprior)%*%solve(A_V.gprior)%*%A.gprior + Sigma_s.gprior - t(A.posterior)%*%solve(A_V.posterior)%*%A.posterior
+    Sigma_v.posterior = nrow(Y_ext) + Sigma_v.gprior
+    
+    Sigma.inv.draw      = rWishart(1, Sigma_v.posterior, solve(Sigma_s.posterior))[,,1]
+    Sigma.posterior.draws[,,s] = solve(Sigma.inv.draw)
+    
+    A.posterior.draws[,,s] = matrix(mvtnorm::rmvnorm(1, mean=as.vector(A.posterior), sigma=Sigma.posterior.draws[,,s]%*%A_V.posterior), ncol=2)
+    
+    lambda_s.posterior = sum(diag(Sigma.inv.draw%*%t(Y_ext - X_ext%*%A.posterior.draws[,,s])%*%(Y_ext - X_ext%*%A.posterior.draws[,,s]))) + lambda_s.gprior
+    lambda_v.posterior = nrow(Y_ext)*2 + lambda_v.gprior
+    
+    lambda.draw = lambda_s.posterior / rchisq(1, lambda_v.posterior)
+    lambda.posterior.draws[s] = lambda.draw
+  }
+  return(list(Sigma.posterior.draws = Sigma.posterior.draws, 
+              A.posterior.draws = A.posterior.draws, 
+              lambda.posterior.draws = lambda.posterior.draws))
 }
 
 round(apply(A.posterior.draws, 1:2, mean),2)
@@ -543,18 +584,20 @@ X_ext = as.matrix(X_ext)
 ### Baseline Model Estimation
 ```{r, echo=TRUE}
 
-A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
-Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/T
+# A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
+# Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/T
+# 
+# kappa.1     = 0.02^2
+# kappa.2     = 100
+# A.pri       = matrix(0, (1+p*N), N)
+# V.pri       = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+# S.pri       = diag(diag(Sigma.hat))
+# nu.pri      = N+1
+# 
+# 
+# pris = list(A.pri, V.pri, S.pri, nu.pri)
 
-kappa.1     = 0.02^2
-kappa.2     = 100
-A.pri       = matrix(0, (1+p*N), N)
-V.pri       = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
-S.pri       = diag(diag(Sigma.hat))
-nu.pri      = N+1
-
-pris = list(A.pri, V.pri, S.pri, nu.pri)
-
+pris = Prior(N,P,X_ext, Y_ext)
 res = get_posteriors(1000, Y_ext, X_ext, pris)
 
 head(round(apply(res[[1]],1:2,mean),2)) #A posterior mean
