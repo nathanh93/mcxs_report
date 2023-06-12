@@ -446,6 +446,8 @@ We repeat the above steps for the desired amount of iterations and collect the p
 ### Gibbs Sampler code for t-distributed errors:
 ```{r, echo=TRUE}
 
+# consider making this script a function
+
 #Setting priors and initialising parameters
 A.gprior = matrix(0, 3, 2)
 A_V.gprior = diag(1,3)
