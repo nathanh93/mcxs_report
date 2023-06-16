@@ -374,7 +374,7 @@ Following the methodology of [Geweke 1993](https://onlinelibrary.wiley.com/doi/e
 
 ```{=tex}
 \begin{align}
-U|\lambda &\sim MN(0, \Sigma, \lambda I_t) \\
+U|\lambda &\sim MN(0, \Sigma, \lambda I_T) \\
 \lambda &\sim IG2( s_{\lambda}, \nu_{\lambda}) 
 \end{align}
 ```
@@ -516,6 +516,77 @@ round(mean(tdist_res_rw$lambda.posterior.draws),2)
 ```
 
 As can be seen, when the extended model estimation routine is applied to the simulated bivariate random walk data, the estimates of $A$ and $\Sigma$ again match the true parameter values closely.
+
+
+## Model Extension: Stochastic Volatility with T Distributed Errors
+
+The second extension to the model is a further augmentation to the form of the errors in order to account for stochastic volatility. We can explicitly account for heteroskedasticity in the errors by applying a model specification in which the variance changes over time according to some stochastic process. This extension can be combined with the previous model including t-distributed errors to achieve an even more robust model for errors.
+
+$$ \begin{align}
+Y &= XA + U \\
+U|\lambda &\sim MN(0, \Sigma, \lambda \text{diag}(\sigma^2)) \\
+\lambda &\sim IG2( s_{\lambda}, \nu_{\lambda}) \\
+\\
+\sigma^2 &= (\exp(h_1), ..., exp(h_T)) \\
+h_T &- \text{follows a stochastic volatility process} \\
+\lambda &- \text{the scale parameter for t errors}
+\end{align}$$
+
+
+It is convenient for estimation to assume $h_t$ follows a random walk process. That is,
+
+$$
+\begin{align}
+h_t &= h_{t-1} + \sigma_v v_t \\
+\\
+v_t &\sim \mathcal{N}(0,1) \\
+\sigma^2_v &- \text{estimated parameter of the model}
+\end{align}
+$$
+
+Estimation of $h$ is completed via its own Gibbs Sampling routine. The sampler is applied to a log-linearised form of the data which strips out the conditional mean in order to isolate the error term. The sampling routine involves drawing  estimated parameters from a combination of Normal, IG2 as well the log Chi-Square distribution. The log Chi-Square distribution in this case is approximated by a mixture of ten normal distributions and sampled from using the inverse transform method. One pass of the sampler draws a sample of all of the estimated parameters, including $T\times1$ vector $h$, the exponent of which forms $\sigma^2$.
+
+
+
+With the overall model specified in this form, the likelihood function is as follows, with the $\sigma^2$ diagonal matrix entering in place of the previous identity matrix $I_T$.
+
+$$
+\begin{align}
+L(A,\Sigma,\Lambda|Y,X) &\propto \det(\Sigma)^{-\frac{T}{2}} \det(\lambda \times \text{diag}(\sigma^2))^{-\frac{N}{2}} exp(-\frac{1}{2} tr[\Sigma^{-1} (Y-XA)' (\lambda \times \text{diag}(\sigma^2))^{-1} (Y-XA) ])
+\end{align}
+$$
+
+Following the same derivations as before, we compute the full conditionals for $A$, $\Sigma$ and $\lambda$ as
+
+$$
+\begin{align}
+p(A,\Sigma|Y,X) &= MNIW(\bar{A},\bar{V},\bar{S},\bar{\nu}) \\
+\\
+\bar{V} &= (X'(\lambda  \text{diag}(\sigma^2))^{-1}X + \underline{V}^{-1})^{-1} \\
+\bar{A} &= \bar{V}(X'(\lambda  \text{diag}(\sigma^2))^{-1}Y + \underline{V}^{-1}\underline{A}) \\
+\bar{S} &= Y'(\lambda  \text{diag}(\sigma^2))^{-1}Y + \underline{A}'\underline{V}^{-1}\underline{A} + \underline{S} - \bar{A}'\bar{V}^{-1}\bar{A} \\
+\bar{\nu} &= T + \underline{\nu}
+\\
+\\
+p(\lambda|Y,A,\Sigma) &= IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
+\bar{s_{\lambda}} &= tr[\Sigma^{-1}(Y-XA)'\text{diag}(\sigma^2)^{-1}(Y-XA)] + \underline{s_{\lambda}} \\
+\bar{\nu_{\lambda}} &= TN + \underline{\nu_{\lambda}}
+\end{align}
+$$
+
+
+### Gibbs Sampling Routine for SV and T Distributed Errors
+
+Initialize $\lambda^{(0)}$ and $h_t^{(0)}$.
+
+At each iteration:
+
+1. Draw $\Sigma^{(i)}$ from the $IW(\bar{S},\bar{\nu})$ distribution
+2. Draw $A^{(i)}$ from the $MN(\bar{A},\Sigma^{(i)}, \bar{V})$ distribution
+3. Draw $\lambda^{(i)}$ from $IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}})$
+4. Draw $h^{(i)}$ from the SV sampling routine described above
+
+
 
 
 # Empirical Results
