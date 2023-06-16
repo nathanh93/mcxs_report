@@ -138,7 +138,7 @@ for (i in 1:ncol(df.log)){
 ```
 #
 
-Conducting Augmented Dickey-Fuller tests on the log transformed RVs to test for stationarity results in the rejection of the null hypothesis of non-stationarity for all series at the 0.05 level. This implies stationarity in the log transformed variables.
+Conducting Augmented Dickey-Fuller tests on the log transformed RVs to test for stationarity results in the rejection of the null hypothesis of non-stationarity for all series at the 0.05 level. This implies stationarity in the log transformed variables. Observing ACF plots for each of the logged variables however highlights a high degree of persistence over time, further motivating an AR specification.
 
 
 ##### ADF Test Results for Log Transformed 5 Minute RVs {style="text-align: center;"}
@@ -159,10 +159,14 @@ formattable::formattable(df)
 ```
 
 
-##### Persistence of the log realised volatilities
+##### Persistence of the log realised volatilities {style="text-align: center;"}
 
-```{R}
-FinTS::Acf(log(data[data$Symbol=='.SPX','rv5']))
+```{R, fig.width=8, fig.height=3}
+par(mfrow=c(1,2), mar=c(3,3,4,2))
+for (i in c('.SPX', '.DJI', '.FTSE', '.GDAXI','.FCHI','.STOXX50E','.N225','.AORD','.HSI','.KS11')){
+  acf(log(data[data$Symbol==i,'rv5']), main=i)
+}
+
 ```
 
 
