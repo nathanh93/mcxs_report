@@ -171,6 +171,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#gibbs-sampler-code-for-t-distributed-errors" id="toc-gibbs-sampler-code-for-t-distributed-errors" class="nav-link" data-scroll-target="#gibbs-sampler-code-for-t-distributed-errors">Gibbs Sampler code for t-distributed errors:</a></li>
   </ul></li>
+  <li><a href="#model-extension-stochastic-volatility-with-t-distributed-errors" id="toc-model-extension-stochastic-volatility-with-t-distributed-errors" class="nav-link" data-scroll-target="#model-extension-stochastic-volatility-with-t-distributed-errors">Model Extension: Stochastic Volatility with T Distributed Errors</a>
+  <ul class="collapse">
+  <li><a href="#gibbs-sampling-routine-for-sv-and-t-distributed-errors" id="toc-gibbs-sampling-routine-for-sv-and-t-distributed-errors" class="nav-link" data-scroll-target="#gibbs-sampling-routine-for-sv-and-t-distributed-errors">Gibbs Sampling Routine for SV and T Distributed Errors</a></li>
+  </ul></li>
   </ul></li>
   <li><a href="#empirical-results" id="toc-empirical-results" class="nav-link" data-scroll-target="#empirical-results">Empirical Results</a>
   <ul class="collapse">
@@ -590,16 +594,16 @@ p(\Sigma|Y,X) &amp;= IW_N(\bar{S},\bar{\nu}) \\
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 0.15 0.03
-[2,] 1.00 0.00
-[3,] 0.00 1.00</code></pre>
+<pre><code>     [,1]  [,2]
+[1,] 0.28 -0.32
+[2,] 1.00  0.00
+[3,] 0.01  0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 1.03 0.04
-[2,] 0.04 1.01</code></pre>
+<pre><code>      [,1]  [,2]
+[1,]  1.04 -0.01
+[2,] -0.01  1.07</code></pre>
 </div>
 </div>
 <p>As shown above the estimated parameter means closely match the expected values for the data generating process.</p>
@@ -613,7 +617,7 @@ U_t &amp;\sim t_N(0, \Sigma, \nu)
 \end{align}\]</span>
 <p>Following the methodology of <a href="https://onlinelibrary.wiley.com/doi/epdf/10.1002/jae.3950080504?saml_referrer">Geweke 1993</a>, a T-distribution for the error term can be represented by a scale mixture of normal distributions with a scaling term <span class="math inline">\(\lambda\)</span> which is Inverse Gamma 2 distributed.</p>
 <span class="math display">\[\begin{align}
-U|\lambda &amp;\sim MN(0, \Sigma, \lambda I_t) \\
+U|\lambda &amp;\sim MN(0, \Sigma, \lambda I_T) \\
 \lambda &amp;\sim IG2( s_{\lambda}, \nu_{\lambda})
 \end{align}\]</span>
 <p>Under this specification, the kernel of the likelihood function takes the following form:</p>
@@ -725,17 +729,17 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="co"># A posterior mean</span></span>
 <span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(tdist_res_rw<span class="sc">$</span>A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 0.14 0.03
-[2,] 1.00 0.00
-[3,] 0.00 1.00</code></pre>
+<pre><code>     [,1]  [,2]
+[1,] 0.28 -0.32
+[2,] 1.00  0.00
+[3,] 0.01  0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sigma posterior mean</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(tdist_res_rw<span class="sc">$</span>Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 1.02 0.04
-[2,] 0.04 1.00</code></pre>
+<pre><code>      [,1]  [,2]
+[1,]  1.03 -0.01
+[2,] -0.01  1.06</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lambda posterior mean</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(tdist_res_rw<span class="sc">$</span>lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -744,6 +748,62 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 </div>
 </div>
 <p>As can be seen, when the extended model estimation routine is applied to the simulated bivariate random walk data, the estimates of <span class="math inline">\(A\)</span> and <span class="math inline">\(\Sigma\)</span> again match the true parameter values closely.</p>
+</section>
+</section>
+<section id="model-extension-stochastic-volatility-with-t-distributed-errors" class="level2">
+<h2 class="anchored" data-anchor-id="model-extension-stochastic-volatility-with-t-distributed-errors">Model Extension: Stochastic Volatility with T Distributed Errors</h2>
+<p>The second extension to the model is a further augmentation to the form of the errors in order to account for stochastic volatility. We can explicitly account for heteroskedasticity in the errors by applying a model specification in which the variance changes over time according to some stochastic process. This extension can be combined with the previous model including t-distributed errors to achieve an even more robust model for errors.</p>
+<p><span class="math display">\[ \begin{align}
+Y &amp;= XA + U \\
+U|\lambda &amp;\sim MN(0, \Sigma, \lambda \text{diag}(\sigma^2)) \\
+\lambda &amp;\sim IG2( s_{\lambda}, \nu_{\lambda}) \\
+\\
+\sigma^2 &amp;= (\exp(h_1), ..., exp(h_T)) \\
+h_T &amp;- \text{follows a stochastic volatility process} \\
+\lambda &amp;- \text{the scale parameter for t errors}
+\end{align}\]</span></p>
+<p>It is convenient for estimation to assume <span class="math inline">\(h_t\)</span> follows a random walk process. That is,</p>
+<p><span class="math display">\[
+\begin{align}
+h_t &amp;= h_{t-1} + \sigma_v v_t \\
+\\
+v_t &amp;\sim \mathcal{N}(0,1) \\
+\sigma^2_v &amp;- \text{estimated parameter of the model}
+\end{align}
+\]</span></p>
+<p>Estimation of <span class="math inline">\(h\)</span> is completed via its own Gibbs Sampling routine. The sampler is applied to a log-linearised form of the data which strips out the conditional mean in order to isolate the error term. The sampling routine involves drawing estimated parameters from a combination of Normal, IG2 as well the log Chi-Square distribution. The log Chi-Square distribution in this case is approximated by a mixture of ten normal distributions and sampled from using the inverse transform method. One pass of the sampler draws a sample of all of the estimated parameters, including <span class="math inline">\(T\times1\)</span> vector <span class="math inline">\(h\)</span>, the exponent of which forms <span class="math inline">\(\sigma^2\)</span>.</p>
+<p>With the overall model specified in this form, the likelihood function is as follows, with the <span class="math inline">\(\sigma^2\)</span> diagonal matrix entering in place of the previous identity matrix <span class="math inline">\(I_T\)</span>.</p>
+<p><span class="math display">\[
+\begin{align}
+L(A,\Sigma,\Lambda|Y,X) &amp;\propto \det(\Sigma)^{-\frac{T}{2}} \det(\lambda \times \text{diag}(\sigma^2))^{-\frac{N}{2}} exp(-\frac{1}{2} tr[\Sigma^{-1} (Y-XA)' (\lambda \times \text{diag}(\sigma^2))^{-1} (Y-XA) ])
+\end{align}
+\]</span></p>
+<p>Following the same derivations as before, we compute the full conditionals for <span class="math inline">\(A\)</span>, <span class="math inline">\(\Sigma\)</span> and <span class="math inline">\(\lambda\)</span> as</p>
+<p><span class="math display">\[
+\begin{align}
+p(A,\Sigma|Y,X) &amp;= MNIW(\bar{A},\bar{V},\bar{S},\bar{\nu}) \\
+\\
+\bar{V} &amp;= (X'(\lambda  \text{diag}(\sigma^2))^{-1}X + \underline{V}^{-1})^{-1} \\
+\bar{A} &amp;= \bar{V}(X'(\lambda  \text{diag}(\sigma^2))^{-1}Y + \underline{V}^{-1}\underline{A}) \\
+\bar{S} &amp;= Y'(\lambda  \text{diag}(\sigma^2))^{-1}Y + \underline{A}'\underline{V}^{-1}\underline{A} + \underline{S} - \bar{A}'\bar{V}^{-1}\bar{A} \\
+\bar{\nu} &amp;= T + \underline{\nu}
+\\
+\\
+p(\lambda|Y,A,\Sigma) &amp;= IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
+\bar{s_{\lambda}} &amp;= tr[\Sigma^{-1}(Y-XA)'\text{diag}(\sigma^2)^{-1}(Y-XA)] + \underline{s_{\lambda}} \\
+\bar{\nu_{\lambda}} &amp;= TN + \underline{\nu_{\lambda}}
+\end{align}
+\]</span></p>
+<section id="gibbs-sampling-routine-for-sv-and-t-distributed-errors" class="level3">
+<h3 class="anchored" data-anchor-id="gibbs-sampling-routine-for-sv-and-t-distributed-errors">Gibbs Sampling Routine for SV and T Distributed Errors</h3>
+<p>Initialize <span class="math inline">\(\lambda^{(0)}\)</span> and <span class="math inline">\(h_t^{(0)}\)</span>.</p>
+<p>At each iteration:</p>
+<ol type="1">
+<li>Draw <span class="math inline">\(\Sigma^{(i)}\)</span> from the <span class="math inline">\(IW(\bar{S},\bar{\nu})\)</span> distribution</li>
+<li>Draw <span class="math inline">\(A^{(i)}\)</span> from the <span class="math inline">\(MN(\bar{A},\Sigma^{(i)}, \bar{V})\)</span> distribution</li>
+<li>Draw <span class="math inline">\(\lambda^{(i)}\)</span> from <span class="math inline">\(IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}})\)</span></li>
+<li>Draw <span class="math inline">\(h^{(i)}\)</span> from the SV sampling routine described above</li>
+</ol>
 </section>
 </section>
 </section>
@@ -779,10 +839,10 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>)) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7] [,8]  [,9] [,10]
-[1,] -3.19 -0.10 -0.92 -0.76 -0.66 -2.53 -1.99 0.24 -1.64 -1.14
-[2,]  0.21  0.04  0.04  0.08 -0.02  0.02  0.00 0.04 -0.04  0.02
-[3,]  0.08  0.14  0.05  0.07  0.06  0.04  0.05 0.13  0.05  0.06
-[4,]  0.05  0.05  0.12  0.09  0.10  0.01  0.02 0.06  0.01  0.12
+[1,] -3.18 -0.10 -0.94 -0.76 -0.67 -2.52 -2.00 0.24 -1.63 -1.15
+[2,]  0.22  0.04  0.04  0.08 -0.02  0.02  0.00 0.04 -0.04  0.02
+[3,]  0.08  0.14  0.05  0.08  0.06  0.04  0.05 0.13  0.05  0.07
+[4,]  0.05  0.05  0.12  0.09  0.10  0.01  0.03 0.06  0.01  0.12
 [5,]  0.10  0.04  0.06  0.11  0.03  0.04  0.02 0.04  0.02  0.04
 [6,] -0.02  0.06  0.10  0.05  0.17  0.02  0.04 0.05  0.05  0.12</code></pre>
 </div>
@@ -792,8 +852,8 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 [1,] 0.83 0.07 0.08 0.15 0.04 0.06 0.07 0.08 -0.01  0.09
 [2,] 0.07 0.83 0.17 0.19 0.18 0.08 0.08 0.42  0.09  0.19
 [3,] 0.08 0.17 0.51 0.19 0.24 0.05 0.06 0.18  0.05  0.26
-[4,] 0.15 0.19 0.19 0.64 0.18 0.07 0.07 0.19  0.05  0.24
-[5,] 0.04 0.18 0.24 0.18 0.58 0.05 0.07 0.18  0.07  0.28
+[4,] 0.15 0.19 0.19 0.65 0.18 0.07 0.07 0.19  0.05  0.24
+[5,] 0.04 0.18 0.24 0.18 0.58 0.05 0.07 0.18  0.07  0.27
 [6,] 0.06 0.08 0.05 0.07 0.05 0.55 0.09 0.08  0.12  0.04</code></pre>
 </div>
 </div>
@@ -806,26 +866,26 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(tres<span class="sc">$</span>A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]  [,9] [,10]
-[1,] -4.61 -1.32 -1.96 -1.99 -1.64 -3.95 -3.34 -0.98 -2.98 -2.02
-[2,]  0.12  0.04  0.04  0.06  0.01  0.02  0.01  0.04 -0.01  0.03
-[3,]  0.06  0.10  0.06  0.07  0.06  0.04  0.05  0.10  0.05  0.06
+[1,] -4.61 -1.28 -2.01 -2.04 -1.62 -3.96 -3.36 -0.94 -3.00 -2.06
+[2,]  0.11  0.04  0.04  0.06  0.01  0.02  0.01  0.04 -0.02  0.03
+[3,]  0.06  0.10  0.06  0.06  0.06  0.04  0.05  0.10  0.05  0.06
 [4,]  0.04  0.05  0.08  0.07  0.08  0.02  0.03  0.06  0.02  0.08
-[5,]  0.07  0.06  0.06  0.07  0.04  0.03  0.03  0.06  0.02  0.05
-[6,]  0.02  0.06  0.08  0.05  0.10  0.03  0.04  0.06  0.04  0.08</code></pre>
+[5,]  0.07  0.05  0.06  0.07  0.05  0.03  0.03  0.05  0.02  0.05
+[6,]  0.01  0.06  0.08  0.06  0.10  0.03  0.04  0.06  0.04  0.08</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(tres<span class="sc">$</span>Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-[1,] 0.50 0.04 0.04 0.06 0.02 0.03 0.03 0.04 0.00  0.04
-[2,] 0.04 0.52 0.07 0.07 0.07 0.04 0.04 0.14 0.04  0.07
+[1,] 0.49 0.03 0.04 0.06 0.02 0.02 0.03 0.04 0.00  0.04
+[2,] 0.03 0.52 0.07 0.07 0.07 0.04 0.04 0.14 0.05  0.07
 [3,] 0.04 0.07 0.32 0.07 0.09 0.02 0.03 0.07 0.02  0.09
 [4,] 0.06 0.07 0.07 0.40 0.07 0.03 0.03 0.07 0.02  0.08
-[5,] 0.02 0.07 0.09 0.07 0.36 0.03 0.04 0.07 0.04  0.10
-[6,] 0.03 0.04 0.02 0.03 0.03 0.33 0.04 0.04 0.05  0.02</code></pre>
+[5,] 0.02 0.07 0.09 0.07 0.35 0.02 0.03 0.07 0.03  0.10
+[6,] 0.02 0.04 0.02 0.03 0.02 0.33 0.04 0.04 0.05  0.02</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(tres<span class="sc">$</span>lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.96</code></pre>
+<pre><code>[1] 3.97</code></pre>
 </div>
 </div>
 <p>We can then compute forecasts for both models by sampling from the predictive densities. For each draw of <span class="math inline">\(A\)</span> and <span class="math inline">\(\Sigma\)</span>, we sample h times from the predictive density in order to compute a forecast horizon of h periods. Each of the h draws are computed as 1 period ahead forecasts. Where the predictive density requires data which has not yet been observed this is replaced by the preceding forecasts computed within the same iteration.</p>
