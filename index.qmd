@@ -321,37 +321,23 @@ for (i in 1:p){
 Y_ext = as.matrix(Y_ext)
 X_ext = as.matrix(X_ext)
 
-# A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
-# Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/nrow(Y_ext)
-# 
-# kappa.1     = 0.02^2
-# kappa.2     = 100
-# A.pri     = matrix(0, (1+p*N), N)
-# A.pri[2:3,] = diag(2)
-# V.pri     = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
-# S.pri     = diag(diag(Sigma.hat))
-# nu.pri    = N+1
+A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
+Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/nrow(Y_ext)
 
-Prior <-function(N,P,X_ext, Y_ext){
-        A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
-        Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/nrow(Y_ext)
-        
-        kappa.1     = 0.02^2
-        kappa.2     = 100
-        A.pri     = matrix(0, (1+p*N), N)
-        A.pri[2:3,] = diag(2)
-        V.pri     = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
-        S.pri     = diag(diag(Sigma.hat))
-        nu.pri    = N+1
-  
-        return(list(A.prior = A.pri,
-                    V.prior = V.pri,
-                    S.prior = S.pri,
-                    nu.prior= nu.pri
-                    ))
-}
+kappa.1     = 0.02^2
+kappa.2     = 100
+A.pri     = matrix(0, (1+p*N), N)
+A.pri[2:3,] = diag(2)
+V.pri     = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+S.pri     = diag(diag(Sigma.hat))
+nu.pri    = N+1
 
-pris = list(A.pri, V.pri, S.pri, nu.pri)
+pris = list(
+  A = A.pri, 
+  V = V.pri, 
+  s = S.pri, 
+  nu = nu.pri
+)
 
 res = get_posteriors(10000, Y_ext, X_ext, pris)
 
@@ -501,14 +487,14 @@ We repeat the above steps for the desired amount of iterations and collect the p
 #   lambda.posterior.draws[s] = lambda.draw
 # }
 
-GS_tdistribution <- function(Y_ext, X_ext, S = 1000) {
+GS_tdistribution <- function(S, Y_ext, X_ext, priors) {
   # Set priors
-  A.gprior = matrix(0, 3, 2)
-  A_V.gprior = diag(1,3)
-  Sigma_s.gprior = diag(2)
-  Sigma_v.gprior = 3
-  lambda_s.gprior = 1000
-  lambda_v.gprior = 1000
+  A.gprior = priors$A
+  A_V.gprior = priors$V
+  Sigma_s.gprior = priors$s
+  Sigma_v.gprior = priors$nu
+  lambda_s.gprior = priors$lambda_s
+  lambda_v.gprior = priors$lambda_nu
 
   lambda.draw = lambda_s.gprior/rchisq(1, lambda_v.gprior)
   
@@ -529,7 +515,7 @@ GS_tdistribution <- function(Y_ext, X_ext, S = 1000) {
     Sigma.inv.draw      = rWishart(1, Sigma_v.posterior, solve(Sigma_s.posterior))[,,1]
     Sigma.posterior.draws[,,s] = solve(Sigma.inv.draw)
     
-    A.posterior.draws[,,s] = matrix(mvtnorm::rmvnorm(1, mean=as.vector(A.posterior), sigma=Sigma.posterior.draws[,,s]%*%A_V.posterior), ncol=2)
+    A.posterior.draws[,,s] = matrix(mvtnorm::rmvnorm(1, mean=as.vector(A.posterior), sigma=Sigma.posterior.draws[,,s]%x%A_V.posterior), ncol=2)
     
     lambda_s.posterior = sum(diag(Sigma.inv.draw%*%t(Y_ext - X_ext%*%A.posterior.draws[,,s])%*%(Y_ext - X_ext%*%A.posterior.draws[,,s]))) + lambda_s.gprior
     lambda_v.posterior = nrow(Y_ext)*2 + lambda_v.gprior
@@ -542,9 +528,14 @@ GS_tdistribution <- function(Y_ext, X_ext, S = 1000) {
               lambda.posterior.draws = lambda.posterior.draws))
 }
 
-round(apply(A.posterior.draws, 1:2, mean),2)
-round(apply(Sigma.posterior.draws, 1:2, mean),2)
-round(mean(lambda.posterior.draws),2)
+tdist_res_rw = GS_tdistribution(1000, Y_ext, X_ext, c(pris, list(lambda_s=1000, lambda_nu=1000)))
+
+# A posterior mean
+round(apply(tdist_res_rw$A.posterior.draws, 1:2, mean),2)
+# Sigma posterior mean
+round(apply(tdist_res_rw$Sigma.posterior.draws, 1:2, mean),2)
+# Lambda posterior mean
+round(mean(tdist_res_rw$lambda.posterior.draws),2)
 
 ```
 
@@ -584,20 +575,19 @@ X_ext = as.matrix(X_ext)
 ### Baseline Model Estimation
 ```{r, echo=TRUE}
 
-# A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
-# Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/T
-# 
-# kappa.1     = 0.02^2
-# kappa.2     = 100
-# A.pri       = matrix(0, (1+p*N), N)
-# V.pri       = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
-# S.pri       = diag(diag(Sigma.hat))
-# nu.pri      = N+1
-# 
-# 
-# pris = list(A.pri, V.pri, S.pri, nu.pri)
+A.hat       = solve(t(X_ext)%*%X_ext)%*%t(X_ext)%*%Y_ext
+Sigma.hat   = t(Y_ext-X_ext%*%A.hat)%*%(Y_ext-X_ext%*%A.hat)/T
 
-pris = Prior(N,P,X_ext, Y_ext)
+kappa.1     = 0.02^2
+kappa.2     = 100
+A.pri       = matrix(0, (1+p*N), N)
+V.pri       = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N)))
+S.pri       = diag(diag(Sigma.hat))
+nu.pri      = N+1
+
+
+pris = list(A.pri, V.pri, S.pri, nu.pri)
+
 res = get_posteriors(1000, Y_ext, X_ext, pris)
 
 head(round(apply(res[[1]],1:2,mean),2)) #A posterior mean
@@ -619,7 +609,7 @@ lambda_v.gprior = 4
 
 lambda.draw = lambda_s.gprior/rchisq(1, lambda_v.gprior)
 
-S = 1000 # A limited number of draws are chosen for speed of estimation. This will be increased in the final submission.
+S = 50 # A limited number of draws are chosen for speed of estimation. This will be increased in the final submission.
 
 Sigma.posterior.draws = array(NA, c(N,N,S))
 A.posterior.draws = array(NA, c((1+p*N),N,S))
@@ -719,8 +709,8 @@ get_predictions = function(S, h, A.posterior, Sigma.posterior){
   return(list(point.forecasts, interval.forecasts))
 }
 
-preds_ext = get_predictions(1000, 20, A.posterior.draws, Sigma.posterior.draws)
-preds_base = get_predictions(1000, 20, res[[1]], res[[2]])
+preds_ext = get_predictions(50, 20, A.posterior.draws, Sigma.posterior.draws)
+preds_base = get_predictions(50, 20, res[[1]], res[[2]])
 
 ```
 
