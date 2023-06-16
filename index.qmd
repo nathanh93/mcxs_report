@@ -25,7 +25,7 @@ bibliography: references.bib
 
 ## Objective and Motivation
 
-This paper seeks to examine the effectiveness of Bayesian VARs as a method for forecasting realised volatility (**RV**) in equity markets. It will explore whether various Bayesian estimation techniques applied to vector autoregression can accurately predict RV. The accurate prediction of market volatility has many applications in Finance, including the pricing of derivatives and the estimation of risk measures such as Value at Risk.
+This paper seeks to examine the effectiveness of Bayesian VARs as a method for forecasting realised volatility (**RV**) in equity markets. It will explore how various Bayesian estimation techniques applied to vector autoregression perform when applied to RV. The accurate prediction of market volatility has many applications in Finance, including the pricing of derivatives and the estimation of risk measures such as Value at Risk.
 
 ## Data
 
@@ -44,7 +44,7 @@ The models will be applied to daily data on realised variances occurring on a gr
 | HSI      | Hang Seng     | Hong Kong|
 | KS11     | KOSPI         | Korea    | 
 
-Realised variance is a measure of historical volatility occuring in financial time series constructed from intraday high frequency return data.
+Realised variance is a measure of historical volatility occurring in financial time series constructed from intraday high frequency return data.
 
 Realised variance is defined as the sum of squared returns over specific period:
 ```{=tex}
@@ -183,15 +183,7 @@ Where $rv_t$ is a vector of log transformed realised variances for our $N=10$ st
 
 The error term vector $\epsilon_t$ given the data up to $t-1$ is assumed to be iid multivariate normally distributed of dimension $N=10$, with mean $0_N$ and covariance matrix $\Sigma$.
 
-Bayesian estimation techniques will be then utilised in conjunction with a number of suitably chosen prior specifications in order to estimate competing models and compute 1 day ahead RV forecasts across all indices. The predictions will be made out of sample and the accuracy of the forecasts will then be assessed according to their root mean squared errors **RMSE**, given by:
-
-```{=tex}
-\begin{align}
-RMSE = \sqrt{\sum(\hat{rv_i} - rv_i )^2/n}
-\end{align}
-```
-
-Assessment of prediction accuracy via the RMSEs will facilitate comparison of various different model specifications, such as the incorporation of different prior distributions and differing assumptions about the parameters of those distributions.
+Bayesian estimation techniques will be then utilised in conjunction with a suitably chosen prior specification in order to estimate competing models and compute 20 day ahead RV forecasts across all indices.
 
 The significance of being able to reliably forecast market volatility is primarily seen in the context of financial asset pricing. Volatility of the underlying asset is one of the crucial inputs required in options pricing. With reliable forecasts of stock index volatility one can assess the degree to which options quoted in the market are under or over estimating volatility relative to what is indicated by the historical realised dynamics.
 
@@ -586,6 +578,184 @@ At each iteration:
 3. Draw $\lambda^{(i)}$ from $IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}})$
 4. Draw $h^{(i)}$ from the SV sampling routine described above
 
+### Gibbs Sampler Code
+
+```{R}
+#| echo: true
+#| message: false
+#| warning: false
+
+SVcommon.Gibbs.iteration = function(aux, priors){
+  # A single iteration of the Gibbs sampler for the SV component
+  #
+  # aux is a list containing:
+  #   Y - a TxN matrix
+  #   X - a TxK matrix
+  #   H - a Tx1 matrix
+  #   h0 - a scalar
+  #   sigma.v2 - a scalar
+  #   s - a Tx1 matrix
+  #   A - a KxN matrix
+  #   Sigma - an NxN matrix
+  #   sigma2 - a Tx1 matrix
+  #
+  # priors is a list containing:
+  #   h0.v - a positive scalar
+  #   h0.m - a scalar
+  #   sigmav.s - a positive scalar
+  #   sigmav.nu - a positive scalar
+  #   HH - a TxT matrix
+  
+  T             = dim(aux$Y)[1]
+  N             = dim(aux$Y)[2]
+  alpha.st      = c(1.92677,1.34744,0.73504,0.02266,0-0.85173,-1.97278,-3.46788,-5.55246,-8.68384,-14.65000)
+  sigma.st      = c(0.11265,0.17788,0.26768,0.40611,0.62699,0.98583,1.57469,2.54498,4.16591,7.33342)
+  pi.st         = c(0.00609,0.04775,0.13057,0.20674,0.22715,0.18842,0.12047,0.05591,0.01575,0.00115)
+  
+  Lambda        = solve(chol(aux$Sigma))
+  Z             = rowSums( ( aux$Y - aux$X %*% aux$A ) %*% Lambda ) / sqrt(N)
+  Y.tilde       = as.vector(log((Z + 0.0000001)^2))
+  Ytilde.alpha  = as.matrix(Y.tilde - alpha.st[as.vector(aux$s)])
+  
+  # sampling initial condition
+  ############################################################
+  V.h0.bar      = 1/((1 / priors$h0.v) + (1 / aux$sigma.v2))
+  m.h0.bar      = V.h0.bar*((priors$h0.m / priors$h0.v) + (aux$H[1] / aux$sigma.v2))
+  h0.draw       = rnorm(1, mean = m.h0.bar, sd = sqrt(V.h0.bar))
+  aux$h0        = h0.draw
+  
+  # sampling sigma.v2
+  ############################################################
+  sigma.v2.s    = priors$sigmav.s + sum(c(aux$H[1] - aux$h0, diff(aux$H))^2)
+  sigma.v2.draw = sigma.v2.s / rchisq(1, priors$sigmav.nu + T)
+  aux$sigma.v2  = sigma.v2.draw
+  
+  # sampling auxiliary states
+  ############################################################
+  Pr.tmp        = simplify2array(lapply(1:10,function(x){
+    dnorm(Y.tilde, mean = as.vector(aux$H + alpha.st[x]), sd = sqrt(sigma.st[x]), log = TRUE) + log(pi.st[x])
+  }))
+  Pr            = t(apply(Pr.tmp, 1, function(x){exp(x - max(x)) / sum(exp(x - max(x)))}))
+  s.cum         = t(apply(Pr, 1, cumsum))
+  r             = matrix(rep(runif(T), 10), ncol = 10)
+  ss            = apply(s.cum < r, 1, sum) + 1
+  aux$s         = as.matrix(ss)
+  
+  
+  # sampling log-volatilities using functions for tridiagonal precision matrix
+  ############################################################
+  Sigma.s.inv   = diag(1 / sigma.st[as.vector(aux$s)])
+  D.inv         = Sigma.s.inv + (1 / aux$sigma.v2) * priors$HH
+  b             = as.matrix(Ytilde.alpha / sigma.st[as.vector(aux$s)] + (aux$h0/aux$sigma.v2)*diag(T)[,1])
+  lead.diag     = diag(D.inv)
+  sub.diag      = mgcv::sdiag(D.inv, -1)
+  D.chol        = mgcv::trichol(ld = lead.diag, sd = sub.diag)
+  D.L           = diag(D.chol$ld)
+  mgcv::sdiag(D.L,-1) = D.chol$sd
+  x             = as.matrix(rnorm(T))
+  a             = forwardsolve(D.L, b)
+  draw          = backsolve(t(D.L), a + x)
+  aux$H         = as.matrix(draw)
+  aux$sigma2    = as.matrix(exp(draw))
+  
+  return(aux)
+}
+
+
+GS_sv_tdist = function(S, Y_ext, X_ext, priors_sv){
+  #Full estimation routine for SV model
+  
+  aux_sv = list(
+    Y = Y_ext,
+    X = X_ext,
+    H = matrix(1, nrow(Y_ext), 1),
+    h0 = 0,
+    sigma.v2 = 1,
+    s = matrix(1, nrow(Y_ext), 1),
+    A = matrix(0, (1+p*N), N),
+    Sigma = diag(diag(matrix(1,N,N))),
+    sigma2 = matrix(1,nrow(Y_ext),1)
+  )
+  
+  posteriors      = list(                        
+    H           = matrix(NA,nrow(Y_ext),S),
+    sigma2      = matrix(NA,nrow(Y_ext),S),
+    s           = matrix(NA,nrow(Y_ext),S),
+    h0          = rep(NA,S),
+    sigma.v2    = rep(NA,S),
+    A           = array(NA, c((1+p*N),N,S)),
+    Sigma       = array(NA, c(N,N,S)),
+    lambda       = rep(NA, S)
+  )
+  
+  lambda.draw = priors_sv$lambda_s/rchisq(1, priors_sv$lambda_v)
+  
+  # Sigma.posterior.draws = array(NA, c(N,N,S))
+  # A.posterior.draws = array(NA, c((1+p*N),N,S))
+  lambda.posterior.draws = rep(NA,S)
+  
+  for (s in 1:S){
+
+    lambda.gprior.diag = lambda.draw * matrix(diag(as.vector(aux_sv$sigma2)), ncol = nrow(Y_ext))
+    
+    A_V.posterior     = solve(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%X_ext + solve(priors_sv$V))
+    A.posterior       = A_V.posterior%*%(t(X_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + solve(priors_sv$V)%*%priors_sv$A)
+    Sigma_s.posterior = t(Y_ext)%*%diag(1/diag(lambda.gprior.diag))%*%Y_ext + t(priors_sv$A)%*%solve(priors_sv$V)%*%priors_sv$A + priors_sv$S - t(A.posterior)%*%solve(A_V.posterior)%*%A.posterior
+    Sigma_v.posterior = nrow(Y_ext) + priors_sv$nu
+    
+    Sigma.inv.draw      = rWishart(1, Sigma_v.posterior, solve(Sigma_s.posterior))[,,1]
+    aux_sv$Sigma = solve(Sigma.inv.draw)
+    
+    aux_sv$A = matrix(mvtnorm::rmvnorm(1, mean=as.vector(A.posterior), sigma=aux_sv$Sigma%x%A_V.posterior), ncol=N)
+    
+    lambda_s.posterior = sum(diag(Sigma.inv.draw%*%t(Y_ext - X_ext%*%aux_sv$A)%*%diag(1/diag(matrix(diag(as.vector(aux_sv$sigma2)), ncol = nrow(Y_ext))))%*%(Y_ext - X_ext%*%aux_sv$A))) + priors_sv$lambda_s
+    lambda_v.posterior = nrow(Y_ext)*2 + priors_sv$lambda_v
+    
+    lambda.draw = lambda_s.posterior / rchisq(1, lambda_v.posterior)
+    lambda.posterior.draws[s] = lambda.draw
+    
+    aux_sv = SVcommon.Gibbs.iteration(aux_sv, priors_sv)
+    
+    posteriors$H[,s]             = aux_sv$H
+    posteriors$sigma2[,s]        = aux_sv$sigma2
+    posteriors$s[,s]             = aux_sv$s
+    posteriors$h0[s]             = aux_sv$h0
+    posteriors$sigma.v2[s]       = aux_sv$sigma.v2
+    posteriors$A[,,s]            = aux_sv$A
+    posteriors$Sigma[,,s]        = aux_sv$Sigma
+    posteriors$lambda[s]         = lambda.draw
+  }
+  return(posteriors)
+}
+
+
+HH            = 2*diag(nrow(Y_ext))
+mgcv::sdiag(HH,-1)  =  -1
+mgcv::sdiag(HH,1)   =  -1
+
+priors_sv = list(
+  A = matrix(0, (1+p*N), N),
+  V = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N))),
+  S = diag(diag(Sigma.hat)),
+  nu = diag(diag(Sigma.hat)),
+  lambda_s = 1000,
+  lambda_v = 1000,
+  HH = HH,
+  h0.m     = 0,
+  h0.v     = 1,
+  sigmav.s = 1,
+  sigmav.nu= 1
+)
+
+svres = GS_sv_tdist(1000, Y_ext, X_ext, priors_sv)
+
+head(round(apply(svres$A, 1:2, mean),2))
+head(round(apply(svres$Sigma, 1:2, mean),2))
+round(mean(svres$lambda),2)
+round(mean(svres$sigma2),2)
+
+
+```
 
 
 
@@ -648,7 +818,7 @@ head(round(apply(res[[2]],1:2,mean),2)) #Sigma posterior mean
 ```
 
 
-### Gibbs Sampler Estimation of Extended Model
+### Gibbs Sampler Estimation of T Distribution Model
 ```{r, echo=TRUE}
 
 tres = GS_tdistribution(50, Y_ext, X_ext, c(pris, list(lambda_s=4, lambda_nu=4)))
@@ -659,8 +829,38 @@ round(mean(tres$lambda.posterior.draws),2)
 
 ```
 
+### Gibbs Sampler Estimation of SV & T Distribution Model
 
-We can then compute forecasts for both models by sampling from the predictive densities. For each draw of $A$ and $\Sigma$, we sample h times from the predictive density in order to compute a forecast horizon of h periods. Each of the h draws are computed as 1 period ahead forecasts. Where the predictive density requires data which has not yet been observed this is replaced by the preceding forecasts computed within the same iteration.
+```{r, echo=TRUE}
+
+HH            = 2*diag(nrow(Y_ext))
+mgcv::sdiag(HH,-1)  =  -1
+mgcv::sdiag(HH,1)   =  -1
+
+priors_sv = list(
+  A = matrix(0, (1+p*N), N),
+  V = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N))),
+  S = diag(diag(Sigma.hat)),
+  nu = diag(diag(Sigma.hat)),
+  lambda_s = 1000,
+  lambda_v = 1000,
+  HH = HH,
+  h0.m     = 0,
+  h0.v     = 1,
+  sigmav.s = 1,
+  sigmav.nu= 1
+)
+
+svres = GS_sv_tdist(50, Y_ext, X_ext, priors_sv)
+                            
+head(round(apply(svres$A, 1:2, mean),2))
+head(round(apply(svres$Sigma, 1:2, mean),2))
+round(mean(svres$lambda),2)
+round(mean(svres$sigma2),2)
+
+```
+
+We can then compute forecasts for all models by sampling from the predictive densities. For each draw of $A$ and $\Sigma$, we sample h times from the predictive density in order to compute a forecast horizon of h periods. Each of the h draws are computed as 1 period ahead forecasts. Where the predictive density requires data which has not yet been observed this is replaced by the preceding forecasts computed within the same iteration.
 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
@@ -727,7 +927,9 @@ get_predictions = function(S, h, A.posterior, Sigma.posterior){
 }
 
 preds_base = get_predictions(50, 20, res[[1]], res[[2]])
-preds_ext = get_predictions(50, 20, tres$A.posterior.draws, tres$Sigma.posterior.draws)
+preds_base = get_predictions(50, 20, tres$A.posterior.draws, tres$Sigma.posterior.draws)
+preds_ext = get_predictions(50, 20, svres$A, svres$Sigma)
+
 
 ```
 
@@ -753,9 +955,9 @@ plot_pred = function(ix, preds, preds2){
 
 ```
 
-```{r}
+```{r, fig.width=10, fig.height=3}
 
-par(mfrow=c(2,2), mar=c(3,3,2,2))
+par(mfrow=c(1,2), mar=c(3,3,4,2))
 plot_pred(1, preds_base, preds_ext)
 plot_pred(2, preds_base, preds_ext)
 plot_pred(3, preds_base, preds_ext)
@@ -777,7 +979,7 @@ Comparing the confidence intervals of the two models, we can see that the T-dist
 We can transform the variables and forecasts back into daily RVs by taking the exponent of the variables. Visually the forecasts seem reasonable given the historical data, with the forecasts again reverting towards the long term average. The confidence intervals also look sensible given the transformation back to levels, with the width of the band increasing as the forecasted RV increases as we would expect from the transformation. Again the T-Distribution model exhibits tighter CIs.
 
 ### 20 day RV Forecasts
-```{r }
+```{r, fig.width=10, fig.height=3}
 
 plot_pred_exp = function(ix, preds, preds2){
   h=length(preds[[1]][[1]])
@@ -794,7 +996,7 @@ plot_pred_exp = function(ix, preds, preds2){
 }
 
 
-par(mfrow=c(2,2), mar=c(3,3,2,2))
+par(mfrow=c(1,2), mar=c(3,3,4,2))
 plot_pred_exp(1, preds_base, preds_ext)
 plot_pred_exp(2, preds_base, preds_ext)
 plot_pred_exp(3, preds_base, preds_ext)
@@ -807,4 +1009,9 @@ plot_pred_exp(9, preds_base, preds_ext)
 plot_pred_exp(10, preds_base, preds_ext)
 
 ```
+
+
+## Concluding Remarks
+
+As illustrated in the above plots, 
 
