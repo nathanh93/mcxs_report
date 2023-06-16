@@ -393,7 +393,9 @@ p(A,\Sigma|Y,X) &\propto L(A,\Sigma,\lambda|Y,X)p(A,\Sigma) \\
 \\
 &= \det(\Sigma)^{-\frac{T+N+K+\underline{\nu}+1}{2}} \det(\lambda I_T)^{-\frac{N}{2}} \\
 
-&\times exp(-\frac{1}{2} tr[\Sigma^{-1}(Y'(\lambda I_T)^{-1}Y - 2A'X'(\lambda I_T)^{-1}Y + A'X'(\lambda I_T)^{-1}XA + A'\underline{V}^{-1}A -2A'\underline{V}^{-1}\underline{A} + \underline{A}'\underline{V}^{-1}\underline{A} + \underline{S})])
+&\times exp(-\frac{1}{2} tr[\Sigma^{-1}(Y'(\lambda I_T)^{-1}Y - 2A'X'(\lambda I_T)^{-1}Y + A'X'(\lambda I_T)^{-1}XA \\
+
+&+ A'\underline{V}^{-1}A -2A'\underline{V}^{-1}\underline{A} + \underline{A}'\underline{V}^{-1}\underline{A} + \underline{S})])
 
 
 \end{align}
@@ -927,20 +929,20 @@ get_predictions = function(S, h, A.posterior, Sigma.posterior){
 }
 
 preds_base = get_predictions(50, 20, res[[1]], res[[2]])
-preds_base = get_predictions(50, 20, tres$A.posterior.draws, tres$Sigma.posterior.draws)
-preds_ext = get_predictions(50, 20, svres$A, svres$Sigma)
+preds_t = get_predictions(50, 20, tres$A.posterior.draws, tres$Sigma.posterior.draws)
+preds_sv = get_predictions(50, 20, svres$A, svres$Sigma)
 
 
 ```
 
-The respective out of sample forecasts for 20 days ahead are plotted below. The forecasts from the baseline model are plotted in blue and the T-distributed error model forecasts are plotted in red. 90% confidence intervals are denoted by the shaded regions.
+The respective out of sample forecasts for 20 days ahead are plotted below. The first set of plots compare the Baseline model to the T-Distribution model. The two extended models are then compared against one another. 90% confidence intervals are denoted by the shaded regions.
 
 ### 20 Day log RV Forecast Plots
-```{r, echo=TRUE}
+```{r}
 
 #Plotting function
 
-plot_pred = function(ix, preds, preds2){
+plot_pred = function(ix, preds, preds2, name1, name2){
   h=length(preds[[1]][[1]])
   xdates = c(y$Date, seq(y[length(y[,1]),'Date'], by='day', length.out=h-p))
   
@@ -951,37 +953,65 @@ plot_pred = function(ix, preds, preds2){
   lines(Y_ext[,ix], type='l', col='blue')
   polygon(c((length(Y_ext[,ix])):(length(Y_ext[,ix])+h), (length(Y_ext[,ix])+h):(length(Y_ext[,ix]))), (c(Y_ext[length(Y_ext[,ix]),ix], preds2[[2]][[ix]]['lower',], preds2[[2]][[ix]]['upper',h:1], Y_ext[length(Y_ext[,ix]),ix])), col=rgb(1, 0, 0,0.1), border=NA)
   axis(1, at=1:(length(Y_ext[,ix])+h), labels=xdates, tick=FALSE, cex.axis=1)
+  legend("topright", legend=c(name1, name2), col=c("blue", "red"), lty=1, cex=0.8)
 }
 
 ```
 
-```{r, fig.width=10, fig.height=3}
 
-par(mfrow=c(1,2), mar=c(3,3,4,2))
-plot_pred(1, preds_base, preds_ext)
-plot_pred(2, preds_base, preds_ext)
-plot_pred(3, preds_base, preds_ext)
-plot_pred(4, preds_base, preds_ext)
-plot_pred(5, preds_base, preds_ext)
-plot_pred(6, preds_base, preds_ext)
-plot_pred(7, preds_base, preds_ext)
-plot_pred(8, preds_base, preds_ext)
-plot_pred(9, preds_base, preds_ext)
-plot_pred(10, preds_base, preds_ext)
+#### Baseline model vs T Distribution Model
+```{r, fig.width=8, fig.height=3}
+
+par(mfrow=c(1,2), mar=c(2,3,4,2))
+plot_pred(1, preds_base, preds_t, 'Base','T-dist')
+plot_pred(2, preds_base, preds_t, 'Base','T-dist')
+plot_pred(3, preds_base, preds_t, 'Base','T-dist')
+plot_pred(4, preds_base, preds_t, 'Base','T-dist')
+plot_pred(5, preds_base, preds_t, 'Base','T-dist')
+plot_pred(6, preds_base, preds_t, 'Base','T-dist')
+plot_pred(7, preds_base, preds_t, 'Base','T-dist')
+plot_pred(8, preds_base, preds_t, 'Base','T-dist')
+plot_pred(9, preds_base, preds_t, 'Base','T-dist')
+plot_pred(10, preds_base, preds_t, 'Base','T-dist')
+
+```
+
+#### T Distribution Model vs SV Model
+
+```{r, fig.width=8, fig.height=3}
+
+par(mfrow=c(1,2), mar=c(2,3,4,2))
+plot_pred(1, preds_t, preds_sv, 'T-dist', 'SV')
+plot_pred(2, preds_t, preds_sv, 'T-dist', 'SV')
+plot_pred(3, preds_t, preds_sv, 'T-dist', 'SV')
+plot_pred(4, preds_t, preds_sv, 'T-dist', 'SV')
+plot_pred(5, preds_t, preds_sv, 'T-dist', 'SV')
+plot_pred(6, preds_t, preds_sv, 'T-dist', 'SV')
+plot_pred(7, preds_t, preds_sv, 'T-dist', 'SV')
+plot_pred(8, preds_t, preds_sv, 'T-dist', 'SV')
+plot_pred(9, preds_t, preds_sv, 'T-dist', 'SV')
+plot_pred(10, preds_t, preds_sv, 'T-dist', 'SV')
 
 ```
 
 
-As can be seen by the point forecasts, both model forecasts appear to converge back to a long term average. The forecasts trend higher over the forecast period for all variables, which might be explained as the model predicting volatility will normalise at a higher long run level after a period of relatively low volatility leading up to the forecast period. Forecasts in the T-distribution model appear to move back to the long run mean more quickly than that of the baseline model, suggesting faster mean reversion.
 
-Comparing the confidence intervals of the two models, we can see that the T-distribution model has tighter 90% CIs for all forecasts. This may suggest that our assumption of T-distributed errors is appropriate. If the data has fatter tails than would be captured by a Normal distribution this may have been leading to larger variances estimated by the baseline model. The extended model allows for outliers in the data and therefore estimates the variance more accurately, leading to tighter intervals.
+As can be seen by the point forecasts, all model forecasts appear to converge back to a long term average. The forecasts trend higher over the forecast period for all variables, which might be explained as the model predicting volatility will normalise at a higher long run level after a period of relatively low volatility leading up to the forecast period. Forecasts in the T-distribution and Stochastic Volatility models appear to move back to the long run mean more quickly than that of the baseline model, suggesting faster mean reversion.
 
-We can transform the variables and forecasts back into daily RVs by taking the exponent of the variables. Visually the forecasts seem reasonable given the historical data, with the forecasts again reverting towards the long term average. The confidence intervals also look sensible given the transformation back to levels, with the width of the band increasing as the forecasted RV increases as we would expect from the transformation. Again the T-Distribution model exhibits tighter CIs.
+Comparing the confidence intervals of the models, we can see that the extended models have tighter 90% confidence intervals for all forecasts. This appears to suggest that our modifications to the model are appropriate and lead to increased forecasting power. 
 
-### 20 day RV Forecasts
-```{r, fig.width=10, fig.height=3}
+If the data has fatter tails than would be captured by a Normal distribution this may have been leading to larger variances estimated by the baseline model. The extended model allows for outliers in the data and therefore estimates the variance more accurately, leading to tighter intervals.
 
-plot_pred_exp = function(ix, preds, preds2){
+Likewise the further extension to include stochastic volatility is apt to capture time varying heteroskedasticity in the model. In general, the CIs for the SV model appear slightly tigher than that of the T-distribution model alone, suggesting some slight gain from the extension.
+
+We can transform the variables and forecasts back into daily RVs by taking the exponent of the variables. Visually the forecasts seem reasonable given the historical data, with the forecasts again reverting towards the long term average. The confidence intervals also look sensible given the transformation back to levels, with the width of the band increasing as the forecasted RV increases as we would expect from the transformation. Again the extended models outperform the baseline model in terms of CI width.
+
+### Un-transformed RV Forecasts
+
+#### Baseline Model vs T Distribution Model
+```{r, fig.width=8, fig.height=3}
+
+plot_pred_exp = function(ix, preds, preds2, name1, name2){
   h=length(preds[[1]][[1]])
   xdates = c(y$Date, seq(y[length(y[,1]),'Date'], by='day', length.out=h-p))
   
@@ -992,26 +1022,44 @@ plot_pred_exp = function(ix, preds, preds2){
   lines(exp(Y_ext[,ix]), type='l', col='blue')
   polygon(c((length(Y_ext[,ix])):(length(Y_ext[,ix])+h), (length(Y_ext[,ix])+h):(length(Y_ext[,ix]))), exp(c(Y_ext[length(Y_ext[,ix]),ix], preds2[[2]][[ix]]['lower',], preds2[[2]][[ix]]['upper',h:1], Y_ext[length(Y_ext[,ix]),ix])), col=rgb(1, 0, 0,0.1), border=NA)
   axis(1, at=1:(length(Y_ext[,ix])+h), labels=xdates, tick=FALSE, cex.axis=1)
-  legend("topright", legend=c("Baseline", "T-distribution"), col=c("blue", "red"), lty=1, cex=0.8)
+  legend("topright", legend=c(name1, name2), col=c("blue", "red"), lty=1, cex=0.8)
 }
 
 
-par(mfrow=c(1,2), mar=c(3,3,4,2))
-plot_pred_exp(1, preds_base, preds_ext)
-plot_pred_exp(2, preds_base, preds_ext)
-plot_pred_exp(3, preds_base, preds_ext)
-plot_pred_exp(4, preds_base, preds_ext)
-plot_pred_exp(5, preds_base, preds_ext)
-plot_pred_exp(6, preds_base, preds_ext)
-plot_pred_exp(7, preds_base, preds_ext)
-plot_pred_exp(8, preds_base, preds_ext)
-plot_pred_exp(9, preds_base, preds_ext)
-plot_pred_exp(10, preds_base, preds_ext)
+par(mfrow=c(1,2), mar=c(2,3,4,2))
+plot_pred_exp(1, preds_base, preds_t, 'Base','T-dist')
+plot_pred_exp(2, preds_base, preds_t, 'Base','T-dist')
+plot_pred_exp(3, preds_base, preds_t, 'Base','T-dist')
+plot_pred_exp(4, preds_base, preds_t, 'Base','T-dist')
+plot_pred_exp(5, preds_base, preds_t, 'Base','T-dist')
+plot_pred_exp(6, preds_base, preds_t, 'Base','T-dist')
+plot_pred_exp(7, preds_base, preds_t, 'Base','T-dist')
+plot_pred_exp(8, preds_base, preds_t, 'Base','T-dist')
+plot_pred_exp(9, preds_base, preds_t, 'Base','T-dist')
+plot_pred_exp(10, preds_base, preds_t, 'Base','T-dist')
 
 ```
 
+#### T Distribution Model vs SV Model
+```{r, fig.width=8, fig.height=3}
+par(mfrow=c(1,2), mar=c(2,3,4,2))
+plot_pred_exp(1, preds_t, preds_sv, 'T-dist','SV')
+plot_pred_exp(2, preds_t, preds_sv, 'T-dist','SV')
+plot_pred_exp(3, preds_t, preds_sv, 'T-dist','SV')
+plot_pred_exp(4, preds_t, preds_sv, 'T-dist','SV')
+plot_pred_exp(5, preds_t, preds_sv, 'T-dist','SV')
+plot_pred_exp(6, preds_t, preds_sv, 'T-dist','SV')
+plot_pred_exp(7, preds_t, preds_sv, 'T-dist','SV')
+plot_pred_exp(8, preds_t, preds_sv, 'T-dist','SV')
+plot_pred_exp(9, preds_t, preds_sv, 'T-dist','SV')
+plot_pred_exp(10, preds_t, preds_sv, 'T-dist','SV')
+```
 
 ## Concluding Remarks
 
-As illustrated in the above plots, 
+Overall the resulting forecast plots of the three competing models are encouraging with regard to the suitability of applying Bayesian techniques to volatility data. The forecasting gains made from simple amendments to the model specification make intuitive sense. They support our prior expectation that RV data is appropriately modeled by heteroskastic non-normal specifications. One can imagine further extensions which would even further dial in the predictive ability of an RV BVAR.
+
+This study highlights that Bayesian estimation techniques can be readily modified in order to explore different options for a given modelling application. It is relatively straightforward to build extensions into a simple model and further extensions to this analysis are worth future exploration.
+
+
 
