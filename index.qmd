@@ -25,7 +25,7 @@ bibliography: references.bib
 
 ## Objective and Motivation
 
-This paper seeks to examine the effectiveness of Bayesian VARs as a method for forecasting realised volatility (**RV**) in equity markets. It will explore how various Bayesian estimation techniques applied to vector autoregression perform when applied to RV. The accurate prediction of market volatility has many applications in Finance, including the pricing of derivatives and the estimation of risk measures such as Value at Risk.
+This paper seeks to examine the effectiveness of Bayesian VARs as a method for forecasting realised volatility (**RV**) in equity markets. It will explore how various Bayesian estimation techniques applied to vector autoregression perform with respect to high frequency RV data. The accurate prediction of market volatility has many applications in Finance, including the pricing of derivatives and the estimation of risk measures such as Value at Risk.
 
 ## Data
 
@@ -65,7 +65,7 @@ RV = \sqrt{\sum r^2_t}
 \end{align}
 ```
 
-The RV data is sourced from the [Oxford Man Realised Library](https://oxford-man.ox.ac.uk/) which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. The data set has been employed widely in the literatur for empirical volatility studies, such as by Dutta and Das ([2022](https://onlinelibrary.wiley.com/doi/full/10.1002/fut.22372)) and Brandi and Di Matteo ([2022](https://arxiv.org/pdf/2201.10466.pdf)). For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices. The data ranges between January 2000 and June 2018.
+The RV data is sourced from the [Oxford Man Realised Library](https://oxford-man.ox.ac.uk/) which provides a number of precalculated volatility metrics, including RV on stock indices spanning multiple years. The data set has been employed widely in the literatur for empirical volatility studies, such as by Dutta and Das ([2022](https://onlinelibrary.wiley.com/doi/full/10.1002/fut.22372)) and Brandi and Di Matteo ([2022](https://arxiv.org/pdf/2201.10466.pdf)). For this analysis we will utilise the 5 minute RV measure provided in the dataset for each of our 10 indices. The data ranges between 2000 and 2021.
 
 ##### Figure 1. Time series plots of original values {style="text-align: center;"}
 ```{R loading in data}
@@ -823,7 +823,7 @@ head(round(apply(res[[2]],1:2,mean),2)) #Sigma posterior mean
 ### Gibbs Sampler Estimation of T Distribution Model
 ```{r, echo=TRUE}
 
-tres = GS_tdistribution(50, Y_ext, X_ext, c(pris, list(lambda_s=4, lambda_nu=4)))
+tres = GS_tdistribution(300, Y_ext, X_ext, c(pris, list(lambda_s=4, lambda_nu=4))) #Set to a low value for speed of running. Final run will be longer.
                             
 head(round(apply(tres$A.posterior.draws, 1:2, mean),2))
 head(round(apply(tres$Sigma.posterior.draws, 1:2, mean),2))
@@ -853,7 +853,7 @@ priors_sv = list(
   sigmav.nu= 1
 )
 
-svres = GS_sv_tdist(50, Y_ext, X_ext, priors_sv)
+svres = GS_sv_tdist(300, Y_ext, X_ext, priors_sv) #Set to a low value for speed of running. Final run will be longer.
                             
 head(round(apply(svres$A, 1:2, mean),2))
 head(round(apply(svres$Sigma, 1:2, mean),2))
@@ -861,6 +861,8 @@ round(mean(svres$lambda),2)
 round(mean(svres$sigma2),2)
 
 ```
+
+The 3 sets of estimation results above yield comparable estimates for the autoregressive parameter matrix $A$. The estimates for the constant terms are of similar magnitude across all models, as are the autoregressive coefficients.
 
 We can then compute forecasts for all models by sampling from the predictive densities. For each draw of $A$ and $\Sigma$, we sample h times from the predictive density in order to compute a forecast horizon of h periods. Each of the h draws are computed as 1 period ahead forecasts. Where the predictive density requires data which has not yet been observed this is replaced by the preceding forecasts computed within the same iteration.
 
@@ -928,9 +930,9 @@ get_predictions = function(S, h, A.posterior, Sigma.posterior){
   return(list(point.forecasts, interval.forecasts))
 }
 
-preds_base = get_predictions(50, 20, res[[1]], res[[2]])
-preds_t = get_predictions(50, 20, tres$A.posterior.draws, tres$Sigma.posterior.draws)
-preds_sv = get_predictions(50, 20, svres$A, svres$Sigma)
+preds_base = get_predictions(1000, 20, res[[1]], res[[2]])
+preds_t = get_predictions(300, 20, tres$A.posterior.draws, tres$Sigma.posterior.draws)
+preds_sv = get_predictions(300, 20, svres$A, svres$Sigma)
 
 
 ```
