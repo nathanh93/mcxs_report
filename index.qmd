@@ -823,7 +823,7 @@ head(round(apply(res[[2]],1:2,mean),2)) #Sigma posterior mean
 ### Gibbs Sampler Estimation of T Distribution Model
 ```{r, echo=TRUE}
 
-tres = GS_tdistribution(300, Y_ext, X_ext, c(pris, list(lambda_s=4, lambda_nu=4))) #Set to a low value for speed of running. Final run will be longer.
+tres = GS_tdistribution(1000, Y_ext, X_ext, c(pris, list(lambda_s=4, lambda_nu=4))) #Set to a low value for speed of running. Final run will be longer.
                             
 head(round(apply(tres$A.posterior.draws, 1:2, mean),2))
 head(round(apply(tres$Sigma.posterior.draws, 1:2, mean),2))
@@ -844,8 +844,8 @@ priors_sv = list(
   V = diag(c(kappa.2,kappa.1*((1:p)^(-2))%x%rep(1,N))),
   S = diag(diag(Sigma.hat)),
   nu = diag(diag(Sigma.hat)),
-  lambda_s = 1000,
-  lambda_v = 1000,
+  lambda_s = 4,
+  lambda_v = 4,
   HH = HH,
   h0.m     = 0,
   h0.v     = 1,
@@ -853,7 +853,7 @@ priors_sv = list(
   sigmav.nu= 1
 )
 
-svres = GS_sv_tdist(300, Y_ext, X_ext, priors_sv) #Set to a low value for speed of running. Final run will be longer.
+svres = GS_sv_tdist(1000, Y_ext, X_ext, priors_sv) #Set to a low value for speed of running. Final run will be longer.
                             
 head(round(apply(svres$A, 1:2, mean),2))
 head(round(apply(svres$Sigma, 1:2, mean),2))
@@ -931,8 +931,8 @@ get_predictions = function(S, h, A.posterior, Sigma.posterior){
 }
 
 preds_base = get_predictions(1000, 20, res[[1]], res[[2]])
-preds_t = get_predictions(300, 20, tres$A.posterior.draws, tres$Sigma.posterior.draws)
-preds_sv = get_predictions(300, 20, svres$A, svres$Sigma)
+preds_t = get_predictions(1000, 20, tres$A.posterior.draws, tres$Sigma.posterior.draws)
+preds_sv = get_predictions(1000, 20, svres$A, svres$Sigma)
 
 
 ```
