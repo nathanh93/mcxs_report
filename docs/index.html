@@ -593,16 +593,16 @@ p(\Sigma|Y,X) &amp;= IW_N(\bar{S},\bar{\nu}) \\
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,] -0.01 -0.03
-[2,]  0.99  0.00
-[3,]  0.01  0.99</code></pre>
+<pre><code>     [,1]  [,2]
+[1,] 0.14 -0.08
+[2,] 1.00  0.01
+[3,] 0.00  0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">2</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>) <span class="co">#Sigma posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 0.94 0.01
-[2,] 0.01 1.00</code></pre>
+<pre><code>      [,1]  [,2]
+[1,]  0.97 -0.03
+[2,] -0.03  0.97</code></pre>
 </div>
 </div>
 <p>As shown above the estimated parameter means closely match the expected values for the data generating process.</p>
@@ -730,17 +730,17 @@ p(\lambda|Y,X,A,\Sigma) &amp;\propto L(A,\Sigma,\lambda|Y,X)p(\lambda) \\
 <span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="co"># A posterior mean</span></span>
 <span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(tdist_res_rw<span class="sc">$</span>A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,] -0.01 -0.02
-[2,]  0.99  0.00
-[3,]  0.01  0.99</code></pre>
+<pre><code>     [,1]  [,2]
+[1,] 0.14 -0.09
+[2,] 1.00  0.01
+[3,] 0.00  0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sigma posterior mean</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">apply</span>(tdist_res_rw<span class="sc">$</span>Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     [,1] [,2]
-[1,] 0.93 0.01
-[2,] 0.01 0.98</code></pre>
+<pre><code>      [,1]  [,2]
+[1,]  0.97 -0.03
+[2,] -0.03  0.96</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lambda posterior mean</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(tdist_res_rw<span class="sc">$</span>lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -975,24 +975,24 @@ p(\lambda|Y,A,\Sigma) &amp;= IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
 <span id="cb12-164"><a href="#cb12-164" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-165"><a href="#cb12-165" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(svres<span class="sc">$</span>A, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,] -0.02 -0.05
-[2,]  0.98  0.01
-[3,]  0.02  0.98</code></pre>
+<pre><code>     [,1]  [,2]
+[1,] 0.33 -0.19
+[2,] 0.98  0.01
+[3,] 0.01  0.99</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(svres<span class="sc">$</span>Sigma, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      [,1]  [,2]
-[1,]  6.58 -0.11
-[2,] -0.11  6.86</code></pre>
+<pre><code>     [,1] [,2]
+[1,]  7.2 -0.4
+[2,] -0.4  7.2</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(svres<span class="sc">$</span>lambda),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.58</code></pre>
+<pre><code>[1] 0.6</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(svres<span class="sc">$</span>sigma2),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.52</code></pre>
+<pre><code>[1] 0.49</code></pre>
 </div>
 </div>
 </section>
@@ -1030,10 +1030,10 @@ p(\lambda|Y,A,\Sigma) &amp;= IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
 <span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(res[[<span class="dv">1</span>]],<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,mean),<span class="dv">2</span>)) <span class="co">#A posterior mean</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7] [,8]  [,9] [,10]
-[1,] -3.18 -0.11 -0.93 -0.77 -0.67 -2.52 -2.00 0.24 -1.62 -1.14
-[2,]  0.22  0.04  0.04  0.08 -0.01  0.02  0.00 0.04 -0.04  0.02
-[3,]  0.08  0.14  0.05  0.07  0.06  0.04  0.05 0.13  0.05  0.06
-[4,]  0.05  0.05  0.12  0.08  0.10  0.01  0.03 0.06  0.01  0.12
+[1,] -3.19 -0.10 -0.93 -0.76 -0.66 -2.52 -2.00 0.24 -1.62 -1.13
+[2,]  0.21  0.04  0.04  0.08 -0.02  0.02  0.00 0.04 -0.04  0.02
+[3,]  0.08  0.14  0.05  0.07  0.06  0.04  0.05 0.13  0.05  0.07
+[4,]  0.05  0.05  0.12  0.09  0.10  0.01  0.03 0.06  0.01  0.12
 [5,]  0.10  0.04  0.06  0.11  0.03  0.04  0.02 0.04  0.02  0.04
 [6,] -0.02  0.06  0.10  0.05  0.17  0.02  0.04 0.05  0.05  0.12</code></pre>
 </div>
@@ -1041,42 +1041,42 @@ p(\lambda|Y,A,\Sigma) &amp;= IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]  [,9] [,10]
 [1,] 0.83 0.07 0.08 0.15 0.04 0.06 0.07 0.08 -0.01  0.09
-[2,] 0.07 0.82 0.17 0.19 0.18 0.08 0.08 0.42  0.09  0.19
+[2,] 0.07 0.83 0.17 0.19 0.18 0.08 0.08 0.42  0.09  0.19
 [3,] 0.08 0.17 0.51 0.19 0.24 0.05 0.06 0.18  0.05  0.26
 [4,] 0.15 0.19 0.19 0.65 0.18 0.07 0.07 0.19  0.05  0.24
 [5,] 0.04 0.18 0.24 0.18 0.58 0.05 0.07 0.18  0.07  0.28
-[6,] 0.06 0.08 0.05 0.07 0.05 0.55 0.09 0.08  0.11  0.04</code></pre>
+[6,] 0.06 0.08 0.05 0.07 0.05 0.56 0.09 0.08  0.12  0.04</code></pre>
 </div>
 </div>
 </section>
 <section id="gibbs-sampler-estimation-of-t-distribution-model" class="level3">
 <h3 class="anchored" data-anchor-id="gibbs-sampler-estimation-of-t-distribution-model">Gibbs Sampler Estimation of T Distribution Model</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>tres <span class="ot">=</span> <span class="fu">GS_tdistribution</span>(<span class="dv">300</span>, Y_ext, X_ext, <span class="fu">c</span>(pris, <span class="fu">list</span>(<span class="at">lambda_s=</span><span class="dv">4</span>, <span class="at">lambda_nu=</span><span class="dv">4</span>))) <span class="co">#Set to a low value for speed of running. Final run will be longer.</span></span>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>tres <span class="ot">=</span> <span class="fu">GS_tdistribution</span>(<span class="dv">1000</span>, Y_ext, X_ext, <span class="fu">c</span>(pris, <span class="fu">list</span>(<span class="at">lambda_s=</span><span class="dv">4</span>, <span class="at">lambda_nu=</span><span class="dv">4</span>))) <span class="co">#Set to a low value for speed of running. Final run will be longer.</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                            </span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(tres<span class="sc">$</span>A.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]  [,9] [,10]
-[1,] -4.61 -1.29 -1.99 -2.03 -1.67 -3.96 -3.33 -0.99 -3.00 -2.05
-[2,]  0.12  0.04  0.04  0.06  0.01  0.02  0.01  0.04 -0.02  0.03
+[1,] -4.61 -1.29 -2.00 -2.02 -1.65 -3.98 -3.34 -0.98 -2.98 -2.04
+[2,]  0.12  0.04  0.04  0.06  0.01  0.02  0.01  0.04 -0.01  0.03
 [3,]  0.06  0.10  0.06  0.07  0.06  0.04  0.05  0.10  0.05  0.06
-[4,]  0.04  0.05  0.08  0.06  0.08  0.02  0.03  0.06  0.02  0.08
+[4,]  0.04  0.06  0.08  0.07  0.08  0.02  0.03  0.06  0.02  0.08
 [5,]  0.07  0.05  0.06  0.07  0.05  0.03  0.03  0.06  0.02  0.05
 [6,]  0.01  0.06  0.08  0.05  0.10  0.03  0.04  0.06  0.04  0.08</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(tres<span class="sc">$</span>Sigma.posterior.draws, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-[1,] 0.50 0.03 0.04 0.06 0.02 0.03 0.03 0.04 0.00  0.04
+[1,] 0.49 0.03 0.04 0.06 0.02 0.02 0.03 0.04 0.00  0.04
 [2,] 0.03 0.52 0.07 0.07 0.07 0.04 0.04 0.14 0.05  0.07
 [3,] 0.04 0.07 0.32 0.07 0.09 0.02 0.03 0.07 0.02  0.09
 [4,] 0.06 0.07 0.07 0.40 0.07 0.03 0.03 0.07 0.02  0.08
 [5,] 0.02 0.07 0.09 0.07 0.35 0.03 0.04 0.07 0.04  0.10
-[6,] 0.03 0.04 0.02 0.03 0.03 0.33 0.04 0.04 0.05  0.02</code></pre>
+[6,] 0.02 0.04 0.02 0.03 0.03 0.33 0.04 0.04 0.05  0.02</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(tres<span class="sc">$</span>lambda.posterior.draws),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.97</code></pre>
+<pre><code>[1] 3.98</code></pre>
 </div>
 </div>
 </section>
@@ -1092,8 +1092,8 @@ p(\lambda|Y,A,\Sigma) &amp;= IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
 <span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">V =</span> <span class="fu">diag</span>(<span class="fu">c</span>(kappa<span class="fl">.2</span>,kappa<span class="fl">.1</span><span class="sc">*</span>((<span class="dv">1</span><span class="sc">:</span>p)<span class="sc">^</span>(<span class="sc">-</span><span class="dv">2</span>))<span class="sc">%x%</span><span class="fu">rep</span>(<span class="dv">1</span>,N))),</span>
 <span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">S =</span> <span class="fu">diag</span>(<span class="fu">diag</span>(Sigma.hat)),</span>
 <span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">nu =</span> <span class="fu">diag</span>(<span class="fu">diag</span>(Sigma.hat)),</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda_s =</span> <span class="dv">1000</span>,</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda_v =</span> <span class="dv">1000</span>,</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda_s =</span> <span class="dv">4</span>,</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">lambda_v =</span> <span class="dv">4</span>,</span>
 <span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">HH =</span> HH,</span>
 <span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">h0.m     =</span> <span class="dv">0</span>,</span>
 <span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">h0.v     =</span> <span class="dv">1</span>,</span>
@@ -1101,12 +1101,12 @@ p(\lambda|Y,A,\Sigma) &amp;= IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
 <span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">sigmav.nu=</span> <span class="dv">1</span></span>
 <span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>svres <span class="ot">=</span> <span class="fu">GS_sv_tdist</span>(<span class="dv">300</span>, Y_ext, X_ext, priors_sv) <span class="co">#Set to a low value for speed of running. Final run will be longer.</span></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>svres <span class="ot">=</span> <span class="fu">GS_sv_tdist</span>(<span class="dv">1000</span>, Y_ext, X_ext, priors_sv) <span class="co">#Set to a low value for speed of running. Final run will be longer.</span></span>
 <span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>                            </span>
 <span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(<span class="fu">apply</span>(svres<span class="sc">$</span>A, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, mean),<span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8]  [,9] [,10]
-[1,] -6.84 -4.23 -4.26 -4.54 -4.02 -6.24 -5.58 -3.96 -5.50 -4.33
+[1,] -6.85 -4.21 -4.20 -4.53 -3.93 -6.23 -5.56 -3.90 -5.45 -4.27
 [2,]  0.08  0.02  0.03  0.04  0.01  0.01  0.00  0.03 -0.02  0.02
 [3,]  0.03  0.06  0.04  0.05  0.04  0.03  0.03  0.07  0.03  0.04
 [4,]  0.03  0.04  0.06  0.05  0.05  0.02  0.02  0.04  0.01  0.06
@@ -1117,7 +1117,7 @@ p(\lambda|Y,A,\Sigma) &amp;= IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]  [,9] [,10]
 [1,] 0.33 0.01 0.02 0.03 0.01 0.01 0.01 0.01 -0.01  0.02
-[2,] 0.01 0.34 0.03 0.03 0.03 0.02 0.02 0.06  0.02  0.03
+[2,] 0.01 0.35 0.03 0.03 0.03 0.02 0.02 0.06  0.02  0.03
 [3,] 0.02 0.03 0.21 0.03 0.04 0.01 0.01 0.03  0.01  0.04
 [4,] 0.03 0.03 0.03 0.27 0.03 0.01 0.01 0.03  0.01  0.04
 [5,] 0.01 0.03 0.04 0.03 0.23 0.01 0.02 0.03  0.02  0.04
@@ -1125,11 +1125,11 @@ p(\lambda|Y,A,\Sigma) &amp;= IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
 </div>
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(svres<span class="sc">$</span>lambda),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.93</code></pre>
+<pre><code>[1] 0.85</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(svres<span class="sc">$</span>sigma2),<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 14.99</code></pre>
+<pre><code>[1] 15.32</code></pre>
 </div>
 </div>
 <p>The 3 sets of estimation results above yield comparable estimates for the autoregressive parameter matrix <span class="math inline">\(A\)</span>. The estimates for the constant terms are of similar magnitude across all models, as are the autoregressive coefficients.</p>
@@ -1198,8 +1198,8 @@ p(\lambda|Y,A,\Sigma) &amp;= IG2(\bar{s_{\lambda}},\bar{\nu_{\lambda}}) \\
 <span id="cb38-61"><a href="#cb38-61" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb38-62"><a href="#cb38-62" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-63"><a href="#cb38-63" aria-hidden="true" tabindex="-1"></a>preds_base <span class="ot">=</span> <span class="fu">get_predictions</span>(<span class="dv">1000</span>, <span class="dv">20</span>, res[[<span class="dv">1</span>]], res[[<span class="dv">2</span>]])</span>
-<span id="cb38-64"><a href="#cb38-64" aria-hidden="true" tabindex="-1"></a>preds_t <span class="ot">=</span> <span class="fu">get_predictions</span>(<span class="dv">300</span>, <span class="dv">20</span>, tres<span class="sc">$</span>A.posterior.draws, tres<span class="sc">$</span>Sigma.posterior.draws)</span>
-<span id="cb38-65"><a href="#cb38-65" aria-hidden="true" tabindex="-1"></a>preds_sv <span class="ot">=</span> <span class="fu">get_predictions</span>(<span class="dv">300</span>, <span class="dv">20</span>, svres<span class="sc">$</span>A, svres<span class="sc">$</span>Sigma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb38-64"><a href="#cb38-64" aria-hidden="true" tabindex="-1"></a>preds_t <span class="ot">=</span> <span class="fu">get_predictions</span>(<span class="dv">1000</span>, <span class="dv">20</span>, tres<span class="sc">$</span>A.posterior.draws, tres<span class="sc">$</span>Sigma.posterior.draws)</span>
+<span id="cb38-65"><a href="#cb38-65" aria-hidden="true" tabindex="-1"></a>preds_sv <span class="ot">=</span> <span class="fu">get_predictions</span>(<span class="dv">1000</span>, <span class="dv">20</span>, svres<span class="sc">$</span>A, svres<span class="sc">$</span>Sigma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The respective out of sample forecasts for 20 days ahead are plotted below. The first set of plots compare the Baseline model to the T-Distribution model. The two extended models are then compared against one another. 90% confidence intervals are denoted by the shaded regions.</p>
 </section>
